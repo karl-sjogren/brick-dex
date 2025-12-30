@@ -1,0 +1,59 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="hero">
+    <h1>Welcome to <span class="text-yellow">Brick</span>Dex</h1>
+    <p class="lead">Manage your LEGO collection with ease</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">@Model.TotalSets</div>
+        <div class="stat-label">Sets in Collection</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">@Model.TotalParts</div>
+        <div class="stat-label">Total Parts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">@Model.WishlistCount</div>
+        <div class="stat-label">On Wishlist</div>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-buttons">
+        <a asp-page="/Sets/Search" class="btn btn-primary">Add New Set</a>
+        <a asp-page="/Sets/Index" class="btn btn-secondary">View Collection</a>
+        <a asp-page="/Sets/Wishlist" class="btn btn-secondary">View Wishlist</a>
+    </div>
+</div>
+
+@if(Model.RecentSets.Count > 0) {
+    <div class="recent-sets">
+        <h2>Recently Added</h2>
+        <div class="sets-grid">
+            @foreach(var set in Model.RecentSets) {
+                <div class="set-card @(set.Status != BrickDex.Core.Models.SetStatus.None ? $"has-status status-{set.Status.ToString().ToLower()}" : "")">
+                    <div class="set-image-wrapper">
+                        @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                            <img src="@set.ImageUrl" alt="@set.Name" class="set-image" loading="lazy" />
+                        }
+                        @if(set.Status != BrickDex.Core.Models.SetStatus.None) {
+                            <span class="status-badge status-@set.Status.ToString().ToLower()">@set.Status.ToString().Replace("InStorage", "In Storage")</span>
+                        }
+                    </div>
+                    <div class="set-info">
+                        <h3>@set.Name</h3>
+                        <p class="set-number">@set.SetNumber</p>
+                        <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

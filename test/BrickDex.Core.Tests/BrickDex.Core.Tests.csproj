@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BrickDex.Core\BrickDex.Core.csproj" />
+    <ProjectReference Include="..\..\src\BrickDex.Web\BrickDex.Web.csproj" />
+  </ItemGroup>
+
+</Project>

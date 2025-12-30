@@ -1,0 +1,21 @@
+@page
+@model BrickDex.Web.Pages.Sets.IndexModel
+@{
+    ViewData["Title"] = "My Collection";
+}
+
+<div class="page-header">
+    <h1>My Collection</h1>
+    <a asp-page="/Sets/Search" class="btn btn-primary">Add New Set</a>
+</div>
+
+@if(Model.Sets.Count == 0) {
+    <div class="empty-state">
+        <p>Your collection is empty. Start by adding some sets!</p>
+        <a asp-page="/Sets/Search" class="btn btn-primary">Search for Sets</a>
+    </div>
+} else {
+    <div class="sets-table-container">
+        <lego-sets-table sets="@System.Text.Json.JsonSerializer.Serialize(Model.Sets, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase })"></lego-sets-table>
+    </div>
+}

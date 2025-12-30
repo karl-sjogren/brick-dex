@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 32" width="160" height="32">
+  <!-- Top-down 2x2 brick (2 rows of 2 studs) -->
+  <g transform="translate(3, 3)">
+    <!-- Brick body (yellow filled) -->
+    <rect x="0" y="0" width="22" height="22" rx="3" fill="#ffcf00"/>
+
+    <!-- 4 studs (2 rows of 2) - red -->
+    <!-- Row 1 -->
+    <circle cx="6" cy="6" r="4" fill="#e3000b"/>
+    <circle cx="16" cy="6" r="4" fill="#e3000b"/>
+    <!-- Row 2 -->
+    <circle cx="6" cy="16" r="4" fill="#e3000b"/>
+    <circle cx="16" cy="16" r="4" fill="#e3000b"/>
+
+    <!-- Stud highlights -->
+    <circle cx="6" cy="6" r="1.8" fill="#ff4444" opacity="0.5"/>
+    <circle cx="16" cy="6" r="1.8" fill="#ff4444" opacity="0.5"/>
+    <circle cx="6" cy="16" r="1.8" fill="#ff4444" opacity="0.5"/>
+    <circle cx="16" cy="16" r="1.8" fill="#ff4444" opacity="0.5"/>
+  </g>
+
+  <!-- BrickDex text -->
+  <text x="30" y="23" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700">
+    <tspan fill="#ffcf00">Brick</tspan><tspan fill="#ffffff">Dex</tspan>
+  </text>
+</svg>

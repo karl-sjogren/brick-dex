@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/BrickDex.Benchmarks/BrickDex.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/BrickDex.Core/BrickDex.Core.csproj" />
+    <Project Path="src/BrickDex.Frontend/BrickDex.Frontend.csproj" />
+    <Project Path="src/BrickDex.Web/BrickDex.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/BrickDex.Core.Tests/BrickDex.Core.Tests.csproj" />
+    <Project Path="test/BrickDex.TestHelpers/BrickDex.TestHelpers.csproj" />
+  </Folder>
+</Solution>

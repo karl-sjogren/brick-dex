@@ -1,0 +1,755 @@
+// Variables
+$primary-color: #e3000b; // LEGO red
+$secondary-color: #ffcf00; // LEGO yellow
+$text-color: #333;
+$background-color: #f5f5f5;
+$white: #fff;
+$border-color: #ddd;
+$success-color: #28a745;
+$danger-color: #dc3545;
+
+// Reset and base
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: $text-color;
+  background-color: $background-color;
+  margin: 0;
+  padding: 0;
+}
+
+// Layout
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+// Header
+.site-header {
+  background-color: $primary-color;
+  color: $white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.navbar-brand {
+  color: $white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    color: $secondary-color;
+  }
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  color: $white;
+  text-decoration: none;
+
+  &:hover {
+    color: $secondary-color;
+  }
+}
+
+// Main content
+.main-content {
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+// Footer
+.site-footer {
+  background-color: $text-color;
+  color: $white;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+// Typography
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.text-yellow {
+  color: $secondary-color;
+}
+
+// Buttons
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-primary {
+  background-color: $primary-color;
+  color: $white;
+
+  &:hover {
+    background-color: darken($primary-color, 10%);
+  }
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: $white;
+
+  &:hover {
+    background-color: darken(#6c757d, 10%);
+  }
+}
+
+.btn-success {
+  background-color: $success-color;
+  color: $white;
+
+  &:hover {
+    background-color: darken($success-color, 10%);
+  }
+}
+
+.btn-danger {
+  background-color: $danger-color;
+  color: $white;
+
+  &:hover {
+    background-color: darken($danger-color, 10%);
+  }
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+// Forms
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: $text-color;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgb(227 0 11 / 20%);
+  }
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+// Cards
+.set-card {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  }
+}
+
+.set-image-wrapper {
+  position: relative;
+}
+
+.set-image {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  background-color: $background-color;
+}
+
+// Status colors
+$status-ordered: #17a2b8;    // Info blue
+$status-instorage: #6c757d;  // Gray
+$status-building: #ffc107;   // Warning yellow
+$status-built: $success-color;
+$status-sold: #6f42c1;       // Purple
+
+.set-card .status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: $white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+
+  &.status-ordered {
+    background-color: $status-ordered;
+  }
+
+  &.status-instorage {
+    background-color: $status-instorage;
+  }
+
+  &.status-building {
+    background-color: $status-building;
+    color: $text-color;
+  }
+
+  &.status-built {
+    background-color: $status-built;
+  }
+
+  &.status-sold {
+    background-color: $status-sold;
+  }
+}
+
+.set-card.has-status {
+  &.status-ordered {
+    border-color: $status-ordered;
+  }
+
+  &.status-instorage {
+    border-color: $status-instorage;
+  }
+
+  &.status-building {
+    border-color: $status-building;
+  }
+
+  &.status-built {
+    border-color: $status-built;
+  }
+
+  &.status-sold {
+    border-color: $status-sold;
+  }
+}
+
+.set-info {
+  padding: 1rem;
+
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+}
+
+.set-number {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.set-details {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.set-theme {
+  color: $primary-color;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.set-actions {
+  padding: 0 1rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// Grids
+.sets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: $primary-color;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Page elements
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin-bottom: 0;
+  }
+}
+
+.hero {
+  text-align: center;
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2.5rem;
+    color: $primary-color;
+  }
+
+  .lead {
+    font-size: 1.25rem;
+    color: #666;
+  }
+}
+
+.quick-actions {
+  margin-bottom: 2rem;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.recent-sets {
+  h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+// Empty state
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+
+  p {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+}
+
+// Search
+.search-form {
+  margin-bottom: 2rem;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 0.5rem;
+
+  input {
+    flex: 1;
+  }
+}
+
+.search-results {
+  .results-count {
+    color: #666;
+    margin-bottom: 1rem;
+    display: block;
+  }
+}
+
+// Table
+.sets-table-container {
+  overflow-x: auto;
+}
+
+.table-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+
+  .filter-input {
+    max-width: 300px;
+  }
+
+  .results-count {
+    color: #666;
+    font-size: 0.875rem;
+  }
+}
+
+.sets-table {
+  width: 100%;
+  background-color: $white;
+  border-collapse: collapse;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+
+  th,
+  td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid $border-color;
+  }
+
+  th {
+    background-color: $background-color;
+    font-weight: 600;
+
+    &.sortable {
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background-color: darken($background-color, 5%);
+      }
+    }
+  }
+
+  tbody tr:hover {
+    background-color: rgb(227 0 11 / 5%);
+  }
+
+  .image-cell {
+    width: 60px;
+    padding: 0.5rem;
+  }
+
+  .image-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .set-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+  }
+
+  .status-badge {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: $white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &.status-ordered {
+      background-color: $status-ordered;
+    }
+
+    &.status-instorage {
+      background-color: $status-instorage;
+    }
+
+    &.status-building {
+      background-color: $status-building;
+      color: $text-color;
+    }
+
+    &.status-built {
+      background-color: $status-built;
+    }
+
+    &.status-sold {
+      background-color: $status-sold;
+    }
+  }
+
+  tr.has-status {
+    &.status-ordered {
+      background-color: rgb(23 162 184 / 5%);
+    }
+
+    &.status-instorage {
+      background-color: rgb(108 117 125 / 5%);
+    }
+
+    &.status-building {
+      background-color: rgb(255 193 7 / 5%);
+    }
+
+    &.status-built {
+      background-color: rgb(40 167 69 / 5%);
+    }
+
+    &.status-sold {
+      background-color: rgb(111 66 193 / 5%);
+    }
+  }
+}
+
+.empty-table-message {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-top: none;
+}
+
+// Details page
+.set-details {
+  .set-header {
+    margin-bottom: 2rem;
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: $primary-color;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.set-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.set-image-container {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.set-detail-image {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.set-info-panel {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.set-attributes {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+
+  dt {
+    font-weight: 600;
+    color: #666;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.set-edit-form {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.5rem;
+
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Error page
+.error-page {
+  text-align: center;
+  padding: 3rem;
+}
+
+.request-id {
+  margin-top: 1rem;
+  color: #666;
+}
+
+// Alerts
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: $text-color;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover:not(.disabled):not(.current) {
+    background-color: $background-color;
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+
+  &.current {
+    background-color: $primary-color;
+    border-color: $primary-color;
+    color: $white;
+  }
+
+  &.disabled {
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.pagination-prev,
+.pagination-next {
+  padding: 0 1rem;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  color: #666;
+}

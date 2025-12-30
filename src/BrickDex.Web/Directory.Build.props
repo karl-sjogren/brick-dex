@@ -1,0 +1,29 @@
+<Project>
+  <PropertyGroup>
+    <ParentDirectoryBuildPropsPath>$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))</ParentDirectoryBuildPropsPath>
+  </PropertyGroup>
+
+  <ImportGroup>
+    <Import Project="$(ParentDirectoryBuildPropsPath)" />
+  </ImportGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.Extensions.Logging.Abstractions"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(ProjectName).Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- Web projects don't need explicit reference to Logging.Abstractions or TestableIO as they are part of the framework or not needed -->
+  <ItemGroup>
+    <PackageReference Remove="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Remove="TestableIO.System.IO.Abstractions.Wrappers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\BannedSymbols.txt" />
+  </ItemGroup>
+</Project>

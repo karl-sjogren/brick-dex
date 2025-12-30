@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.csdevkit",
+    "editorconfig.editorconfig",
+    "eamodio.gitlens",
+    "github.vscode-github-actions",
+    "editorconfig.editorconfig",
+    "aaron-bond.better-comments",
+    "vitest.explorer",
+    "sibiraj-s.vscode-scss-formatter",
+    "mrmlnc.vscode-scss",
+    "stylelint.vscode-stylelint",
+    "dbaeumer.vscode-eslint",
+  ]
+}

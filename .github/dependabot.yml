@@ -1,0 +1,98 @@
+# Please see the documentation for all configuration options:
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+
+updates:
+  - package-ecosystem: "dotnet-sdk"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    groups:
+      roslynator:
+        patterns:
+          - "Roslynator*"
+      ms-codeanalysis:
+        patterns:
+          - "Microsoft.CodeAnalysis*"
+      benchmark-dotnet:
+        patterns:
+          - "BenchmarkDotNet*"
+      automapper:
+        patterns:
+          - "AutoMapper*"
+      entityframework-core:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+      aspnetcore:
+        patterns:
+          - "Microsoft.AspNetCore*"
+      hangfire:
+        patterns:
+          - "Hangfire*"
+      serilog:
+        patterns:
+          - "Serilog*"
+      xunit:
+        patterns:
+          - "xunit*"
+      fakeiteasy:
+        patterns:
+          - "FakeItEasy*"
+      testable-io:
+        patterns:
+          - "TestableIO*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "npm"
+    directory: "/src/BrickDex.Frontend/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    groups:
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+      esbuild:
+        patterns:
+          - "esbuild"
+          - "esbuild-*"
+      vite:
+        patterns:
+          - "vite"
+          - "vite-*"
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@testing-library/dom"
+          - "eslint-plugin-testing-library"
+          - "jsdom-testing-mocks"
+      postcss:
+        patterns:
+          - "postcss"
+          - "postcss-*"
+          - "autoprefixer"
+          - "cssnano"
+          - "sass"
+      stylelint:
+        patterns:
+          - "stylelint"
+          - "stylelint-*"

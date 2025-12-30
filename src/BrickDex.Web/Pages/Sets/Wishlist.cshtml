@@ -1,0 +1,43 @@
+@page
+@model BrickDex.Web.Pages.Sets.WishlistModel
+@{
+    ViewData["Title"] = "Wishlist";
+}
+
+<div class="page-header">
+    <h1>Wishlist</h1>
+    <a asp-page="/Sets/Search" asp-route-wishlist="true" class="btn btn-primary">Add to Wishlist</a>
+</div>
+
+@if(Model.Sets.Count == 0) {
+    <div class="empty-state">
+        <p>Your wishlist is empty. Add some sets you'd like to have!</p>
+        <a asp-page="/Sets/Search" asp-route-wishlist="true" class="btn btn-primary">Search for Sets</a>
+    </div>
+} else {
+    <div class="sets-grid">
+        @foreach(var set in Model.Sets) {
+            <div class="set-card">
+                @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                    <img src="@set.ImageUrl" alt="@set.Name" class="set-image" loading="lazy" />
+                }
+                <div class="set-info">
+                    <h3>@set.Name</h3>
+                    <p class="set-number">@set.SetNumber</p>
+                    <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                    @if(!string.IsNullOrEmpty(set.ThemeName)) {
+                        <p class="set-theme">@set.ThemeName</p>
+                    }
+                </div>
+                <div class="set-actions">
+                    <form method="post" asp-page-handler="MoveToCollection" asp-route-id="@set.Id">
+                        <button type="submit" class="btn btn-sm btn-success">Move to Collection</button>
+                    </form>
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@set.Id" onsubmit="return confirm('Are you sure?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
