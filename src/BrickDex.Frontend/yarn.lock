@@ -2091,7 +2091,7 @@ __metadata:
     stylelint-config-standard-scss: "npm:^16.0.0"
     typescript: "npm:^5.9.3"
     undici: "npm:^7.16.0"
-    vite: "npm:^7.2.6"
+    vite: "npm:^7.3.0"
     vite-plugin-mkcert: "npm:^1.17.9"
     vitest: "npm:^4.0.14"
     webdriverio: "npm:^9.21.0"
@@ -8426,11 +8426,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^7.2.6":
-  version: 7.2.6
-  resolution: "vite@npm:7.2.6"
+"vite@npm:^7.3.0":
+  version: 7.3.0
+  resolution: "vite@npm:7.3.0"
   dependencies:
-    esbuild: "npm:^0.25.0"
+    esbuild: "npm:^0.27.0"
     fdir: "npm:^6.5.0"
     fsevents: "npm:~2.3.3"
     picomatch: "npm:^4.0.3"
@@ -8477,7 +8477,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/c640ed9c91957749287af2f483f5b5024a56718ba7cf32b0e2c398772fdf7fdb9fd5f97665c41712d4e9422c14009e283d0b69ac1b64b4f91474625bebe324de
+  checksum: 10/044490133aaf4cc024700995edaac10ff182262c721a44a8ac7839207b3e5af435c8b9dd8ee4658dc0f47147fa4211632cca3120177aa4bab99a7cb095e5149e
   languageName: node
   linkType: hard
 
