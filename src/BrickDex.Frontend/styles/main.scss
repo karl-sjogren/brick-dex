@@ -104,8 +104,8 @@ body {
   position: relative;
   transition: background-color 0.2s;
 
-  &::before,
-  &::after {
+  &:before,
+  &:after {
     content: '';
     position: absolute;
     left: 0;
@@ -115,25 +115,25 @@ body {
     transition: transform 0.2s;
   }
 
-  &::before {
+  &:before {
     top: -7px;
   }
 
-  &::after {
+  &:after {
     top: 7px;
   }
 }
 
-.navbar-toggler[aria-expanded="true"] {
+.navbar-toggler[aria-expanded='true'] {
   .navbar-toggler-icon {
     background-color: transparent;
 
-    &::before {
+    &:before {
       top: 0;
       transform: rotate(45deg);
     }
 
-    &::after {
+    &:after {
       top: 0;
       transform: rotate(-45deg);
     }
