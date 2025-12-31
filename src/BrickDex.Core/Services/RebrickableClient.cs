@@ -1,9 +1,11 @@
+using System.Net.Http.Json;
 using BrickDex.Core.Contracts;
+using BrickDex.Core.Options;
 using BrickDex.Core.Services.Rebrickable;
-using BrickDex.Web.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace BrickDex.Web.Services;
+namespace BrickDex.Core.Services;
 
 public class RebrickableClient : IRebrickableClient {
     private readonly HttpClient _httpClient;
@@ -34,18 +36,50 @@ public class RebrickableClient : IRebrickableClient {
         }
     }
 
-    public async Task<RebrickableSearchResult<RebrickableSet>> SearchSetsAsync(string query, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default) {
+    public async Task<RebrickableSearchResult<RebrickableSet>> SearchSetsAsync(SetSearchFilters filters, CancellationToken cancellationToken = default) {
         try {
-            var response = await _httpClient.GetAsync(
-                $"lego/sets/?key={_apiKey}&search={Uri.EscapeDataString(query)}&page={page}&page_size={pageSize}",
-                cancellationToken);
+            var queryParams = new List<string> { $"key={_apiKey}" };
+
+            if(!string.IsNullOrWhiteSpace(filters.Query)) {
+                queryParams.Add($"search={Uri.EscapeDataString(filters.Query)}");
+            }
+
+            queryParams.Add($"page={filters.Page}");
+            queryParams.Add($"page_size={filters.PageSize}");
+
+            if(filters.MinYear.HasValue) {
+                queryParams.Add($"min_year={filters.MinYear.Value}");
+            }
+
+            if(filters.MaxYear.HasValue) {
+                queryParams.Add($"max_year={filters.MaxYear.Value}");
+            }
+
+            if(filters.MinParts.HasValue) {
+                queryParams.Add($"min_parts={filters.MinParts.Value}");
+            }
+
+            if(filters.MaxParts.HasValue) {
+                queryParams.Add($"max_parts={filters.MaxParts.Value}");
+            }
+
+            if(filters.ThemeId.HasValue) {
+                queryParams.Add($"theme_id={filters.ThemeId.Value}");
+            }
+
+            if(!string.IsNullOrWhiteSpace(filters.Ordering)) {
+                queryParams.Add($"ordering={Uri.EscapeDataString(filters.Ordering)}");
+            }
+
+            var url = $"lego/sets/?{string.Join("&", queryParams)}";
+            var response = await _httpClient.GetAsync(url, cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<RebrickableSearchResult<RebrickableSet>>(cancellationToken)
                 ?? new RebrickableSearchResult<RebrickableSet>();
         } catch(Exception ex) {
-            _logger.LogError(ex, "Error searching sets with query {Query}", query);
+            _logger.LogError(ex, "Error searching sets with filters {@Filters}", filters);
             return new RebrickableSearchResult<RebrickableSet>();
         }
     }

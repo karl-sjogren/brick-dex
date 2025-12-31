@@ -1,0 +1,46 @@
+@page
+@model BrickDex.Web.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<div class="login-page">
+    <h1>Sign In to BrickDex</h1>
+    <p>Sign in with your preferred provider to manage your LEGO collection.</p>
+
+    <div class="login-providers">
+        @if (Model.GoogleEnabled) {
+            <form method="post" asp-page-handler="Google">
+                <button type="submit" class="btn btn-google">
+                    Sign in with Google
+                </button>
+            </form>
+        }
+
+        @if (Model.GitHubEnabled) {
+            <form method="post" asp-page-handler="GitHub">
+                <button type="submit" class="btn btn-github">
+                    Sign in with GitHub
+                </button>
+            </form>
+        }
+
+        @if (!Model.GoogleEnabled && !Model.GitHubEnabled && !Model.IsDevelopment) {
+            <p class="no-providers">No authentication providers are configured.</p>
+        }
+
+        @if (Model.IsDevelopment) {
+            <div class="dev-login">
+                <hr />
+                <p class="dev-notice">Development Mode</p>
+                <a asp-page="/Account/DevLogin" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-dev">
+                    Sign in as Dev User
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage)) {
+        <div class="alert alert-error">@Model.ErrorMessage</div>
+    }
+</div>

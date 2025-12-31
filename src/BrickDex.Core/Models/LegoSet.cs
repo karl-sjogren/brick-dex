@@ -9,8 +9,5 @@ public class LegoSet : EntityBase {
     public string? ImageUrl { get; set; }
     public string? SetUrl { get; set; }
 
-    public int Quantity { get; set; } = 1;
-    public string? Notes { get; set; }
-    public bool IsWishlist { get; set; }
-    public SetStatus Status { get; set; } = SetStatus.None;
+    public ICollection<UserSet> UserSets { get; set; } = [];
 }

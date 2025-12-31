@@ -1,4 +1,4 @@
-namespace BrickDex.Web.Options;
+namespace BrickDex.Core.Options;
 
 public class RebrickableOptions {
     public required string ApiKey { get; set; }

@@ -1,10 +1,10 @@
 @page "{id:guid}"
 @model BrickDex.Web.Pages.Sets.DetailsModel
 @{
-    ViewData["Title"] = Model.Set?.Name ?? "Set Details";
+    ViewData["Title"] = Model.UserSet?.LegoSet?.Name ?? "Set Details";
 }
 
-@if(Model.Set == null) {
+@if(Model.UserSet == null) {
     <div class="error-state">
         <h1>Set Not Found</h1>
         <p>The requested set could not be found.</p>
@@ -13,77 +13,91 @@
 } else {
     <div class="set-details">
         <div class="set-header">
-            <a asp-page="/Sets/Index" class="back-link">&larr; Back to Collection</a>
-            <h1>@Model.Set.Name</h1>
+            @if(Model.UserSet.IsWishlist) {
+                <a asp-page="/Sets/Wishlist" class="back-link">&larr; Back to Wishlist</a>
+            } else {
+                <a asp-page="/Sets/Index" class="back-link">&larr; Back to Collection</a>
+            }
+            <h1>@Model.UserSet.LegoSet.Name</h1>
         </div>
 
         <div class="set-details-grid">
             <div class="set-image-container">
-                @if(!string.IsNullOrEmpty(Model.Set.ImageUrl)) {
-                    <img src="@Model.Set.ImageUrl" alt="@Model.Set.Name" class="set-detail-image" />
+                @if(!string.IsNullOrEmpty(Model.UserSet.LegoSet.ImageUrl)) {
+                    <picture>
+                        <source media="(max-width: 480px)" srcset="@Model.UserSet.LegoSet.ImageUrl.ToThumbnail(250, 250)">
+                        <source media="(max-width: 768px)" srcset="@Model.UserSet.LegoSet.ImageUrl.ToThumbnail(300, 300)">
+                        <img src="@Model.UserSet.LegoSet.ImageUrl.ToThumbnail(400, 400)" alt="@Model.UserSet.LegoSet.Name" class="set-detail-image" />
+                    </picture>
+                } else {
+                    <div class="set-image-placeholder">
+                        <span>No Image</span>
+                    </div>
                 }
             </div>
 
             <div class="set-info-panel">
                 <dl class="set-attributes">
                     <dt>Set Number</dt>
-                    <dd>@Model.Set.SetNumber</dd>
+                    <dd>@Model.UserSet.LegoSet.SetNumber</dd>
 
                     <dt>Year</dt>
-                    <dd>@Model.Set.Year</dd>
+                    <dd>@Model.UserSet.LegoSet.Year</dd>
 
                     <dt>Parts</dt>
-                    <dd>@Model.Set.NumParts</dd>
+                    <dd>@Model.UserSet.LegoSet.NumParts</dd>
 
-                    @if(!string.IsNullOrEmpty(Model.Set.ThemeName)) {
+                    @if(!string.IsNullOrEmpty(Model.UserSet.LegoSet.ThemeName)) {
                         <dt>Theme</dt>
-                        <dd>@Model.Set.ThemeName</dd>
+                        <dd>@Model.UserSet.LegoSet.ThemeName</dd>
                     }
 
                     <dt>Quantity</dt>
-                    <dd>@Model.Set.Quantity</dd>
+                    <dd>@Model.UserSet.Quantity</dd>
                 </dl>
 
-                @if(!string.IsNullOrEmpty(Model.Set.SetUrl)) {
-                    <a href="@Model.Set.SetUrl" target="_blank" rel="noopener" class="btn btn-secondary">View on Rebrickable</a>
-                }
+                <div class="set-external-links">
+                    @if(!string.IsNullOrEmpty(Model.UserSet.LegoSet.SetUrl)) {
+                        <a href="@Model.UserSet.LegoSet.SetUrl" target="_blank" rel="noopener" class="btn btn-secondary">View on Rebrickable</a>
+                    }
+                    <a href="https://www.lego.com/product/@Model.UserSet.LegoSet.SetNumber.Split('-')[0]" target="_blank" rel="noopener" class="btn btn-secondary">View on LEGO.com</a>
+                </div>
             </div>
         </div>
 
         <div class="set-edit-form">
             <h2>Edit Set</h2>
             <form method="post">
-                <input type="hidden" asp-for="Set.Id" />
+                <input type="hidden" asp-for="UserSet.Id" />
 
                 <div class="form-group">
-                    <label asp-for="Set.Quantity">Quantity</label>
-                    <input type="number" asp-for="Set.Quantity" min="1" class="form-control" />
+                    <label asp-for="UserSet.Quantity">Quantity</label>
+                    <input type="number" asp-for="UserSet.Quantity" min="1" class="form-control" />
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Set.Notes">Notes</label>
-                    <textarea asp-for="Set.Notes" class="form-control" rows="3"></textarea>
+                    <label asp-for="UserSet.Notes">Notes</label>
+                    <textarea asp-for="UserSet.Notes" class="form-control" rows="3"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Set.Status">Status</label>
-                    <select asp-for="Set.Status" asp-items="Html.GetEnumSelectList<BrickDex.Core.Models.SetStatus>()" class="form-control"></select>
+                    <label asp-for="UserSet.Status">Status</label>
+                    <select asp-for="UserSet.Status" asp-items="Html.GetEnumSelectList<BrickDex.Core.Models.SetStatus>()" class="form-control"></select>
                 </div>
 
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" asp-for="Set.IsWishlist" />
+                        <input type="checkbox" asp-for="UserSet.IsWishlist" />
                         In Wishlist
                     </label>
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <form method="post" asp-page-handler="Delete" style="display: inline;">
-                        <input type="hidden" name="id" value="@Model.Set.Id" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this set?')">Delete</button>
-                    </form>
                 </div>
+            </form>
+            <form method="post" asp-page-handler="Delete" asp-route-id="@Model.UserSet.Id" class="delete-form">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this set?')">Delete</button>
             </form>
         </div>
     </div>

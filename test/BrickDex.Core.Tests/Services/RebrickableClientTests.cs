@@ -1,9 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using BrickDex.Core.Options;
+using BrickDex.Core.Services;
 using BrickDex.Core.Services.Rebrickable;
-using BrickDex.Web.Options;
-using BrickDex.Web.Services;
-using Microsoft.Extensions.Options;
 
 namespace BrickDex.Core.Tests.Services;
 
@@ -19,7 +18,7 @@ public class RebrickableClientTests {
             BaseAddress = new Uri("https://rebrickable.com/api/v3/")
         };
 
-        var options = Options.Create(new RebrickableOptions { ApiKey = _testApiKey });
+        var options = Microsoft.Extensions.Options.Options.Create(new RebrickableOptions { ApiKey = _testApiKey });
         var logger = new NullLogger<RebrickableClient>();
 
         _sut = new RebrickableClient(httpClient, options, logger);
@@ -115,7 +114,8 @@ public class RebrickableClientTests {
             JsonSerializer.Serialize(searchResult));
 
         // Act
-        var result = await _sut.SearchSetsAsync("millennium", cancellationToken: TestCancellationToken);
+        var filters = new SetSearchFilters { Query = "millennium" };
+        var result = await _sut.SearchSetsAsync(filters, TestCancellationToken);
 
         // Assert
         result.Count.ShouldBe(2);
@@ -136,7 +136,8 @@ public class RebrickableClientTests {
             JsonSerializer.Serialize(searchResult));
 
         // Act
-        var result = await _sut.SearchSetsAsync("star wars", page: 3, pageSize: 50, cancellationToken: TestCancellationToken);
+        var filters = new SetSearchFilters { Query = "star wars", Page = 3, PageSize = 50 };
+        var result = await _sut.SearchSetsAsync(filters, TestCancellationToken);
 
         // Assert
         result.Count.ShouldBe(100);
@@ -151,7 +152,8 @@ public class RebrickableClientTests {
             statusCode: HttpStatusCode.InternalServerError);
 
         // Act
-        var result = await _sut.SearchSetsAsync("error", cancellationToken: TestCancellationToken);
+        var filters = new SetSearchFilters { Query = "error" };
+        var result = await _sut.SearchSetsAsync(filters, TestCancellationToken);
 
         // Assert
         result.Results.ShouldBeEmpty();
