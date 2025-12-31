@@ -25,15 +25,18 @@ public class LegoSetConfiguration : IEntityTypeConfiguration<LegoSet> {
         builder.Property(b => b.SetUrl)
             .HasMaxLength(1024);
 
-        builder.Property(b => b.Notes)
-            .HasMaxLength(4096);
-
         builder.Property(b => b.CreatedAt)
             .IsRequired();
 
         builder.Property(b => b.UpdatedAt)
             .IsRequired();
 
-        builder.HasIndex(b => b.SetNumber);
+        builder.HasIndex(b => b.SetNumber)
+            .IsUnique();
+
+        builder.HasMany(b => b.UserSets)
+            .WithOne(us => us.LegoSet)
+            .HasForeignKey(us => us.LegoSetId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 
 export class LegoSetsTable extends LitElement {
   static get properties() {
@@ -74,7 +74,7 @@ export class LegoSetsTable extends LitElement {
 
   getStatusName(status) {
     const statusNames = {
-      0: null,       // None
+      0: null, // None
       1: 'Ordered',
       2: 'In Storage',
       3: 'Building',
@@ -141,7 +141,11 @@ export class LegoSetsTable extends LitElement {
                 <div class="image-wrapper">
                   ${set.imageUrl ? html`
                     <img src="${set.imageUrl}" alt="${set.name}" class="set-thumbnail" loading="lazy" />
-                  ` : ''}
+                  ` : html`
+                    <div class="set-thumbnail-placeholder">
+                      <span>No Image</span>
+                    </div>
+                  `}
                   ${this.getStatusName(set.status) ? html`<span class="status-badge status-${this.getStatusClass(set.status)}">${this.getStatusName(set.status)}</span>` : ''}
                 </div>
               </td>
@@ -152,7 +156,7 @@ export class LegoSetsTable extends LitElement {
               <td>${set.themeName || '-'}</td>
               <td>${set.quantity}</td>
               <td>
-                <a href="/Sets/Details/${set.id}" class="btn btn-sm btn-secondary">Edit</a>
+                <a href="/Sets/Details/${set.legoSetId}" class="btn btn-sm btn-secondary">Edit</a>
               </td>
             </tr>
           `)}

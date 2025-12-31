@@ -1,3 +1,4 @@
+using BrickDex.Core.Options;
 using Microsoft.Extensions.Options;
 
 namespace BrickDex.Web.Options;

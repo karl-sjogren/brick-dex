@@ -16,17 +16,32 @@
                 <a class="navbar-brand" asp-page="/Index">
                     <img src="/images/logo.svg" alt="BrickDex" height="36" />
                 </a>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-page="/Sets/Index">My Collection</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-page="/Sets/Wishlist">Wishlist</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-page="/Sets/Search">Search</a>
-                    </li>
-                </ul>
+                @if(User.Identity?.IsAuthenticated == true) {
+                    <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Sets/Index">My Collection</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Sets/Wishlist">Wishlist</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Sets/Search">Search</a>
+                            </li>
+                        </ul>
+                        <div class="navbar-user">
+                            <span class="user-name">@User.Identity.Name</span>
+                            <form method="post" asp-page="/Account/Logout" style="display: inline;">
+                                <button type="submit" class="btn btn-link">Sign Out</button>
+                            </form>
+                        </div>
+                    </div>
+                } else {
+                    <a class="btn btn-primary" asp-page="/Account/Login">Sign In</a>
+                }
             </div>
         </nav>
     </header>
