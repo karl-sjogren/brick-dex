@@ -5,7 +5,7 @@ import './elements/init.mjs';
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
 
-if (navbarToggler && navbarCollapse) {
+if(navbarToggler && navbarCollapse) {
   navbarToggler.addEventListener('click', () => {
     const isExpanded = navbarToggler.getAttribute('aria-expanded') === 'true';
     navbarToggler.setAttribute('aria-expanded', !isExpanded);
