@@ -9,14 +9,14 @@ namespace BrickDex.Web.Pages.Sets;
 
 [Authorize]
 public class WishlistModel : PageModel {
-    private readonly ILegoSetService _legoSetService;
+    private readonly IUserSetService _userSetService;
     private readonly IUserService _userService;
     private readonly IViewPreferenceService _viewPreferenceService;
 
     private const int _pageSize = 20;
 
-    public WishlistModel(ILegoSetService legoSetService, IUserService userService, IViewPreferenceService viewPreferenceService) {
-        _legoSetService = legoSetService;
+    public WishlistModel(IUserSetService userSetService, IUserService userService, IViewPreferenceService viewPreferenceService) {
+        _userSetService = userSetService;
         _userService = userService;
         _viewPreferenceService = viewPreferenceService;
     }
@@ -62,7 +62,7 @@ public class WishlistModel : PageModel {
             SortDescending = SortDesc
         };
 
-        var result = await _legoSetService.GetUserWishlistAsync(user.Id, filters, cancellationToken);
+        var result = await _userSetService.GetUserWishlistAsync(user.Id, filters, cancellationToken);
 
         SetList = new SetListViewModel {
             Sets = result.Items.Select(UserSetViewModel.FromUserSet).ToList(),
@@ -86,10 +86,10 @@ public class WishlistModel : PageModel {
             return Forbid();
         }
 
-        var userSet = await _legoSetService.GetUserSetAsync(user.Id, id, cancellationToken);
+        var userSet = await _userSetService.GetUserSetAsync(user.Id, id, cancellationToken);
         if(userSet != null) {
             userSet.IsWishlist = false;
-            await _legoSetService.UpdateUserSetAsync(userSet, cancellationToken);
+            await _userSetService.UpdateUserSetAsync(userSet, cancellationToken);
         }
 
         return RedirectToPage(new { currentPage = CurrentPage, query = Query, sortBy = SortBy, sortDesc = SortDesc, view = View });
@@ -101,7 +101,7 @@ public class WishlistModel : PageModel {
             return Forbid();
         }
 
-        await _legoSetService.RemoveFromUserCollectionAsync(user.Id, id, cancellationToken);
+        await _userSetService.RemoveFromUserCollectionAsync(user.Id, id, cancellationToken);
         return RedirectToPage(new { currentPage = CurrentPage, query = Query, sortBy = SortBy, sortDesc = SortDesc, view = View });
     }
 }

@@ -1,6 +1,7 @@
+using BrickDex.Core.Contracts;
+using BrickDex.ServiceDefaults;
 using BrickDex.Web.Data;
 using BrickDex.Web.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shorthand.Vite;
 
@@ -14,11 +15,12 @@ try {
 
     var builder = WebApplication.CreateBuilder(args);
 
+    builder.AddServiceDefaults();
+
     builder.Services.AddSerilog();
 
-    // Add database context
-    builder.Services.AddDbContext<BrickDexContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=brickdex.db"));
+    // Add database context (SQL Server via Aspire)
+    builder.AddSqlServerDbContext<BrickDexContext>("brickdex");
 
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -46,6 +48,49 @@ try {
     if(app.Environment.IsDevelopment()) {
         app.UseDeveloperExceptionPage();
         app.UseMigrationsEndPoint();
+
+        // Development-only endpoints for Rebrickable catalog import
+        var devGroup = app.MapGroup("/dev").WithTags("Development");
+
+        devGroup.MapPost("/import-rebrickable-catalog", async (
+            IRebrickableCatalogImportService importService,
+            CancellationToken cancellationToken) => {
+                await importService.ImportAllAsync(cancellationToken);
+                return Results.Ok(new { message = "Rebrickable catalog import completed successfully" });
+            });
+
+        devGroup.MapPost("/import-rebrickable-catalog/{entity}", async (
+            string entity,
+            IRebrickableCatalogImportService importService,
+            CancellationToken cancellationToken) => {
+                switch(entity.ToLowerInvariant()) {
+                    case "themes":
+                        await importService.ImportThemesAsync(cancellationToken);
+                        break;
+                    case "sets":
+                        await importService.ImportSetsAsync(cancellationToken);
+                        break;
+                    case "minifigs":
+                        await importService.ImportMinifigsAsync(cancellationToken);
+                        break;
+                    case "inventories":
+                        await importService.ImportInventoriesAsync(cancellationToken);
+                        break;
+                    case "inventory-sets":
+                        await importService.ImportInventorySetsAsync(cancellationToken);
+                        break;
+                    case "inventory-minifigs":
+                        await importService.ImportInventoryMinifigsAsync(cancellationToken);
+                        break;
+                    default:
+                        return Results.BadRequest(new {
+                            error = $"Unknown entity: {entity}",
+                            validEntities = new[] { "themes", "sets", "minifigs", "inventories", "inventory-sets", "inventory-minifigs" }
+                        });
+                }
+
+                return Results.Ok(new { message = $"Rebrickable {entity} import completed successfully" });
+            });
     } else {
         app.UseExceptionHandler("/Error");
         app.UseHsts();
@@ -61,13 +106,9 @@ try {
 
     app.UseSerilogRequestLogging();
 
-    app.MapRazorPages();
+    app.MapDefaultEndpoints();
 
-    // Ensure database is created
-    using(var scope = app.Services.CreateScope()) {
-        var context = scope.ServiceProvider.GetRequiredService<BrickDexContext>();
-        await context.Database.EnsureCreatedAsync();
-    }
+    app.MapRazorPages();
 
     await app.RunAsync();
 } catch(Exception ex) {

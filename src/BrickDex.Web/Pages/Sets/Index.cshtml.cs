@@ -9,14 +9,14 @@ namespace BrickDex.Web.Pages.Sets;
 
 [Authorize]
 public class IndexModel : PageModel {
-    private readonly ILegoSetService _legoSetService;
+    private readonly IUserSetService _userSetService;
     private readonly IUserService _userService;
     private readonly IViewPreferenceService _viewPreferenceService;
 
     private const int _pageSize = 20;
 
-    public IndexModel(ILegoSetService legoSetService, IUserService userService, IViewPreferenceService viewPreferenceService) {
-        _legoSetService = legoSetService;
+    public IndexModel(IUserSetService userSetService, IUserService userService, IViewPreferenceService viewPreferenceService) {
+        _userSetService = userSetService;
         _userService = userService;
         _viewPreferenceService = viewPreferenceService;
     }
@@ -62,7 +62,7 @@ public class IndexModel : PageModel {
             SortDescending = SortDesc
         };
 
-        var result = await _legoSetService.GetUserSetsAsync(user.Id, filters, cancellationToken);
+        var result = await _userSetService.GetUserSetsAsync(user.Id, filters, cancellationToken);
 
         SetList = new SetListViewModel {
             Sets = result.Items.Select(UserSetViewModel.FromUserSet).ToList(),

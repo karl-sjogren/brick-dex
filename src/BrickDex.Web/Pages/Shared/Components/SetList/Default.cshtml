@@ -74,7 +74,7 @@
                             }
                         </td>
                         <td class="col-name">
-                            <a asp-page="/Sets/Details" asp-route-id="@set.LegoSetId">@set.Name</a>
+                            <a asp-page="/Sets/Details" asp-route-id="@set.Id">@set.Name</a>
                         </td>
                         <td class="col-setnumber">@set.SetNumber</td>
                         <td class="col-year">@set.Year</td>
@@ -83,7 +83,7 @@
                         @if(Model.ShowActions) {
                             <td class="col-actions">
                                 <div class="table-actions">
-                                    <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.LegoSetId">
+                                    <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.Id">
                                         <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
                                         <input type="hidden" name="query" value="@Model.Query" />
                                         <input type="hidden" name="sortBy" value="@Model.SortBy" />
@@ -112,7 +112,7 @@
         @foreach(var set in Model.Sets) {
             @if(Model.ShowActions) {
                 <div class="set-card">
-                    <a asp-page="/Sets/Details" asp-route-id="@set.LegoSetId" class="set-card-link-area">
+                    <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card-link-area">
                         @if(!string.IsNullOrEmpty(set.ImageUrl)) {
                             <picture>
                                 <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
@@ -134,7 +134,7 @@
                         </div>
                     </a>
                     <div class="set-actions">
-                        <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.LegoSetId">
+                        <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.Id">
                             <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
                             <input type="hidden" name="query" value="@Model.Query" />
                             <input type="hidden" name="sortBy" value="@Model.SortBy" />
@@ -153,7 +153,7 @@
                     </div>
                 </div>
             } else {
-                <a asp-page="/Sets/Details" asp-route-id="@set.LegoSetId" class="set-card set-card-link">
+                <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card set-card-link">
                     @if(!string.IsNullOrEmpty(set.ImageUrl)) {
                         <picture>
                             <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">

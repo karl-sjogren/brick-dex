@@ -3,13 +3,13 @@ using BrickDex.Core.Services.Rebrickable;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using RebrickableSetEntity = BrickDex.Core.Models.Rebrickable.RebrickableSet;
 
 namespace BrickDex.Web.Pages.Sets;
 
 [Authorize]
 public class SearchModel : PageModel {
-    private readonly IRebrickableClient _rebrickableClient;
-    private readonly ILegoSetService _legoSetService;
+    private readonly IUserSetService _userSetService;
     private readonly IUserService _userService;
     private readonly ILegoThemeCache _themeCache;
     private readonly ILogger<SearchModel> _logger;
@@ -17,13 +17,11 @@ public class SearchModel : PageModel {
     private const int _pageSize = 20;
 
     public SearchModel(
-        IRebrickableClient rebrickableClient,
-        ILegoSetService legoSetService,
+        IUserSetService userSetService,
         IUserService userService,
         ILegoThemeCache themeCache,
         ILogger<SearchModel> logger) {
-        _rebrickableClient = rebrickableClient;
-        _legoSetService = legoSetService;
+        _userSetService = userSetService;
         _userService = userService;
         _themeCache = themeCache;
         _logger = logger;
@@ -53,7 +51,7 @@ public class SearchModel : PageModel {
     [BindProperty(SupportsGet = true)]
     public string? Ordering { get; set; }
 
-    public IReadOnlyList<RebrickableSet> SearchResults { get; set; } = [];
+    public IReadOnlyList<RebrickableSetEntity> SearchResults { get; set; } = [];
     public IReadOnlyList<RebrickableTheme> Themes { get; set; } = [];
     public int TotalCount { get; set; }
     public int TotalPages => TotalCount > 0 ? (int)Math.Ceiling((double)TotalCount / _pageSize) : 0;
@@ -134,7 +132,7 @@ public class SearchModel : PageModel {
         Ordering = ordering;
 
         try {
-            await _legoSetService.AddToUserCollectionAsync(user.Id, setNumber, isWishlist, cancellationToken);
+            await _userSetService.AddToUserCollectionAsync(user.Id, setNumber, isWishlist, cancellationToken);
             Message = $"Set {setNumber} added to {(isWishlist ? "wishlist" : "collection")}!";
         } catch(InvalidOperationException ex) {
             _logger.LogWarning(ex, "Failed to add set {SetNumber}", setNumber);
@@ -165,9 +163,9 @@ public class SearchModel : PageModel {
             Ordering = Ordering
         };
 
-        var result = await _rebrickableClient.SearchSetsAsync(filters, cancellationToken);
-        SearchResults = result.Results;
-        TotalCount = result.Count;
+        var result = await _userSetService.SearchSetsAsync(filters, cancellationToken);
+        SearchResults = result.Items.ToList();
+        TotalCount = result.TotalCount;
     }
 
     private async Task LoadThemesAsync(CancellationToken cancellationToken) {

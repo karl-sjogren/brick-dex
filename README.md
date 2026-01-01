@@ -13,15 +13,23 @@ A personal LEGO set collection manager. Track your LEGO sets, manage wishlists, 
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or later
+- [.NET Aspire workload](https://learn.microsoft.com/dotnet/aspire/) (recommended)
+- [Docker](https://www.docker.com/) (required for Aspire)
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - [Yarn](https://yarnpkg.com/) (v4 - included via Corepack)
+
+Install the Aspire workload:
+
+```bash
+dotnet workload install aspire
+```
 
 ## Getting Started
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/brick-dex.git
+git clone https://github.com/karl-sjogren/brick-dex.git
 cd brick-dex
 ```
 
@@ -55,6 +63,10 @@ yarn install
 
 ### 4. Apply database migrations
 
+When using Aspire, migrations are applied automatically on startup.
+
+For manual setup without Aspire:
+
 ```bash
 cd src/BrickDex.Web
 dotnet ef database update
@@ -62,9 +74,33 @@ dotnet ef database update
 
 ## Running the Application
 
-You need to run both the backend (.NET) and frontend (Vite) projects simultaneously.
+### With .NET Aspire (Recommended)
 
-### Terminal 1 - Backend
+The easiest way to run the application is with .NET Aspire, which orchestrates
+all services including SQL Server in a container:
+
+```bash
+cd src/BrickDex.AppHost
+dotnet run
+```
+
+This starts:
+- **SQL Server** in a Docker container with persistent data volume
+- **DbGate** for database management (accessible via Aspire dashboard)
+- **BrickDex.Web** application
+
+Open the Aspire dashboard URL shown in the console to access all services.
+The web application runs at `https://localhost:5001`.
+
+> **Note**: You still need to run the Vite dev server separately for frontend
+> hot reload during development (see below).
+
+### Manual Setup (Alternative)
+
+If you prefer not to use Aspire, you can run services manually.
+You need to run both the backend and frontend simultaneously.
+
+#### Terminal 1 - Backend
 
 ```bash
 cd src/BrickDex.Web
@@ -73,14 +109,14 @@ dotnet run
 
 The backend runs at `https://localhost:5001` by default.
 
-### Terminal 2 - Frontend
+#### Terminal 2 - Frontend
 
 ```bash
 cd src/BrickDex.Frontend
 yarn dev
 ```
 
-The Vite dev server runs at `https://localhost:5173` and proxies requests to the backend.
+The Vite dev server runs at `https://localhost:5010` and provides CSS/JS assets.
 
 ## Building for Production
 
@@ -105,9 +141,10 @@ dotnet publish src/BrickDex.Web -c Release -o ./publish
 ```
 brick-dex/
 ├── src/
+│   ├── BrickDex.AppHost/       # .NET Aspire orchestration host
 │   ├── BrickDex.Core/          # Domain models, services, interfaces
 │   ├── BrickDex.Web/           # ASP.NET Core Razor Pages application
-│   └── BrickDex.Frontend/      # Vite + Lit frontend assets
+│   └── BrickDex.Frontend/      # Vite + Sass frontend assets
 ├── test/
 │   ├── BrickDex.Core.Tests/    # Unit tests
 │   └── BrickDex.TestHelpers/   # Test utilities
@@ -117,10 +154,12 @@ brick-dex/
 
 ## Technology Stack
 
-- **Backend**: ASP.NET Core 10, Razor Pages, Entity Framework Core, SQLite
-- **Frontend**: Vite, Lit (Web Components), Sass
+- **Orchestration**: .NET Aspire for local development and service discovery
+- **Backend**: ASP.NET Core 10, Razor Pages, Entity Framework Core
+- **Database**: SQL Server (via Aspire container) or SQLite (standalone)
+- **Frontend**: Vite, Sass
 - **Authentication**: ASP.NET Core Identity with Google/GitHub OAuth
-- **API**: Rebrickable API for LEGO set data
+- **Data Source**: Rebrickable catalog data (imported to local database)
 - **Testing**: xUnit, FakeItEasy, Vitest
 
 ## Running Tests

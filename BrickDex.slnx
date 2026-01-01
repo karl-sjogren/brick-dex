@@ -3,8 +3,10 @@
     <Project Path="benchmarks/BrickDex.Benchmarks/BrickDex.Benchmarks.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/BrickDex.AppHost/BrickDex.AppHost.csproj" />
     <Project Path="src/BrickDex.Core/BrickDex.Core.csproj" />
     <Project Path="src/BrickDex.Frontend/BrickDex.Frontend.csproj" />
+    <Project Path="src/BrickDex.ServiceDefaults/BrickDex.ServiceDefaults.csproj" />
     <Project Path="src/BrickDex.Web/BrickDex.Web.csproj" />
   </Folder>
   <Folder Name="/test/">

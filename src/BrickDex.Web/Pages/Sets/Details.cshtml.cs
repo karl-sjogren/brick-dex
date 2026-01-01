@@ -8,11 +8,11 @@ namespace BrickDex.Web.Pages.Sets;
 
 [Authorize]
 public class DetailsModel : PageModel {
-    private readonly ILegoSetService _legoSetService;
+    private readonly IUserSetService _userSetService;
     private readonly IUserService _userService;
 
-    public DetailsModel(ILegoSetService legoSetService, IUserService userService) {
-        _legoSetService = legoSetService;
+    public DetailsModel(IUserSetService userSetService, IUserService userService) {
+        _userSetService = userSetService;
         _userService = userService;
     }
 
@@ -25,7 +25,7 @@ public class DetailsModel : PageModel {
             return Unauthorized();
         }
 
-        UserSet = await _legoSetService.GetUserSetAsync(user.Id, id, cancellationToken);
+        UserSet = await _userSetService.GetUserSetAsync(user.Id, id, cancellationToken);
         if(UserSet == null) {
             return NotFound();
         }
@@ -43,7 +43,7 @@ public class DetailsModel : PageModel {
             return NotFound();
         }
 
-        await _legoSetService.UpdateUserSetAsync(UserSet, cancellationToken);
+        await _userSetService.UpdateUserSetAsync(UserSet, cancellationToken);
         return RedirectToPage("/Sets/Index");
     }
 
@@ -53,7 +53,7 @@ public class DetailsModel : PageModel {
             return Unauthorized();
         }
 
-        await _legoSetService.RemoveFromUserCollectionAsync(user.Id, id, cancellationToken);
+        await _userSetService.RemoveFromUserCollectionAsync(user.Id, id, cancellationToken);
         return RedirectToPage("/Sets/Index");
     }
 }

@@ -4,6 +4,7 @@ using BrickDex.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BrickDex.Web.Migrations
 {
     [DbContext(typeof(BrickDexContext))]
-    partial class BrickDexContextModelSnapshot : ModelSnapshot
+    [Migration("20260101122210_AddImageUrlToSetsAndMinifigs")]
+    partial class AddImageUrlToSetsAndMinifigs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,54 @@ namespace BrickDex.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BrickDex.Core.Models.LegoSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("CreatedAt")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<int>("NumParts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SetNumber")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("SetUrl")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.Property<string>("ThemeName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<long>("UpdatedAt")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetNumber")
+                        .IsUnique();
+
+                    b.ToTable("LegoSets");
+                });
 
             modelBuilder.Entity("BrickDex.Core.Models.Rebrickable.RebrickableInventory", b =>
                 {
@@ -234,17 +285,15 @@ namespace BrickDex.Web.Migrations
                     b.Property<bool>("IsWishlist")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("LegoSetId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(4096)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
-
-                    b.Property<string>("SetNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -257,9 +306,9 @@ namespace BrickDex.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SetNumber");
+                    b.HasIndex("LegoSetId");
 
-                    b.HasIndex("UserId", "SetNumber")
+                    b.HasIndex("UserId", "LegoSetId")
                         .IsUnique();
 
                     b.ToTable("UserSets");
@@ -348,10 +397,10 @@ namespace BrickDex.Web.Migrations
 
             modelBuilder.Entity("BrickDex.Core.Models.UserSet", b =>
                 {
-                    b.HasOne("BrickDex.Core.Models.Rebrickable.RebrickableSet", "Set")
+                    b.HasOne("BrickDex.Core.Models.LegoSet", "LegoSet")
                         .WithMany("UserSets")
-                        .HasForeignKey("SetNumber")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("LegoSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BrickDex.Core.Models.User", "User")
@@ -360,9 +409,14 @@ namespace BrickDex.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Set");
+                    b.Navigation("LegoSet");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BrickDex.Core.Models.LegoSet", b =>
+                {
+                    b.Navigation("UserSets");
                 });
 
             modelBuilder.Entity("BrickDex.Core.Models.Rebrickable.RebrickableInventory", b =>
@@ -382,8 +436,6 @@ namespace BrickDex.Web.Migrations
                     b.Navigation("Inventories");
 
                     b.Navigation("InventorySets");
-
-                    b.Navigation("UserSets");
                 });
 
             modelBuilder.Entity("BrickDex.Core.Models.Rebrickable.RebrickableTheme", b =>

@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
@@ -26,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BrickDex.Core\BrickDex.Core.csproj" />
+    <ProjectReference Include="..\BrickDex.ServiceDefaults\BrickDex.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

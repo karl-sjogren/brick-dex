@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BrickDex.Web.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAuthenticationSchema : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,16 +15,16 @@ namespace BrickDex.Web.Migrations
                 name: "LegoSets",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    SetNumber = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
-                    Year = table.Column<int>(type: "INTEGER", nullable: false),
-                    NumParts = table.Column<int>(type: "INTEGER", nullable: false),
-                    ThemeName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ImageUrl = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
-                    SetUrl = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
-                    CreatedAt = table.Column<long>(type: "INTEGER", nullable: false),
-                    UpdatedAt = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SetNumber = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    NumParts = table.Column<int>(type: "int", nullable: false),
+                    ThemeName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    SetUrl = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    CreatedAt = table.Column<long>(type: "bigint", nullable: false),
+                    UpdatedAt = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,12 +35,12 @@ namespace BrickDex.Web.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    DisplayName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    AvatarUrl = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true),
-                    CreatedAt = table.Column<long>(type: "INTEGER", nullable: false),
-                    UpdatedAt = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    CreatedAt = table.Column<long>(type: "bigint", nullable: false),
+                    UpdatedAt = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,12 +51,12 @@ namespace BrickDex.Web.Migrations
                 name: "UserLogins",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Provider = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    CreatedAt = table.Column<long>(type: "INTEGER", nullable: false),
-                    UpdatedAt = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Provider = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CreatedAt = table.Column<long>(type: "bigint", nullable: false),
+                    UpdatedAt = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,15 +73,15 @@ namespace BrickDex.Web.Migrations
                 name: "UserSets",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LegoSetId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsWishlist = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Notes = table.Column<string>(type: "TEXT", maxLength: 4096, nullable: true),
-                    CreatedAt = table.Column<long>(type: "INTEGER", nullable: false),
-                    UpdatedAt = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LegoSetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    IsWishlist = table.Column<bool>(type: "bit", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", maxLength: 4096, nullable: true),
+                    CreatedAt = table.Column<long>(type: "bigint", nullable: false),
+                    UpdatedAt = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

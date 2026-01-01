@@ -1,7 +1,7 @@
 @page "{id:guid}"
 @model BrickDex.Web.Pages.Sets.DetailsModel
 @{
-    ViewData["Title"] = Model.UserSet?.LegoSet?.Name ?? "Set Details";
+    ViewData["Title"] = Model.UserSet?.Set?.Name ?? "Set Details";
 }
 
 @if(Model.UserSet == null) {
@@ -18,16 +18,16 @@
             } else {
                 <a asp-page="/Sets/Index" class="back-link">&larr; Back to Collection</a>
             }
-            <h1>@Model.UserSet.LegoSet.Name</h1>
+            <h1>@Model.UserSet.Set.Name</h1>
         </div>
 
         <div class="set-details-grid">
             <div class="set-image-container">
-                @if(!string.IsNullOrEmpty(Model.UserSet.LegoSet.ImageUrl)) {
+                @if(!string.IsNullOrEmpty(Model.UserSet.Set.ImageUrl)) {
                     <picture>
-                        <source media="(max-width: 480px)" srcset="@Model.UserSet.LegoSet.ImageUrl.ToThumbnail(250, 250)">
-                        <source media="(max-width: 768px)" srcset="@Model.UserSet.LegoSet.ImageUrl.ToThumbnail(300, 300)">
-                        <img src="@Model.UserSet.LegoSet.ImageUrl.ToThumbnail(400, 400)" alt="@Model.UserSet.LegoSet.Name" class="set-detail-image" />
+                        <source media="(max-width: 480px)" srcset="@Model.UserSet.Set.ImageUrl.ToThumbnail(250, 250)">
+                        <source media="(max-width: 768px)" srcset="@Model.UserSet.Set.ImageUrl.ToThumbnail(300, 300)">
+                        <img src="@Model.UserSet.Set.ImageUrl.ToThumbnail(400, 400)" alt="@Model.UserSet.Set.Name" class="set-detail-image" />
                     </picture>
                 } else {
                     <div class="set-image-placeholder">
@@ -39,17 +39,17 @@
             <div class="set-info-panel">
                 <dl class="set-attributes">
                     <dt>Set Number</dt>
-                    <dd>@Model.UserSet.LegoSet.SetNumber</dd>
+                    <dd>@Model.UserSet.SetNumber</dd>
 
                     <dt>Year</dt>
-                    <dd>@Model.UserSet.LegoSet.Year</dd>
+                    <dd>@Model.UserSet.Set.Year</dd>
 
                     <dt>Parts</dt>
-                    <dd>@Model.UserSet.LegoSet.NumParts</dd>
+                    <dd>@Model.UserSet.Set.NumParts</dd>
 
-                    @if(!string.IsNullOrEmpty(Model.UserSet.LegoSet.ThemeName)) {
+                    @if(Model.UserSet.Set.Theme != null) {
                         <dt>Theme</dt>
-                        <dd>@Model.UserSet.LegoSet.ThemeName</dd>
+                        <dd>@Model.UserSet.Set.Theme.Name</dd>
                     }
 
                     <dt>Quantity</dt>
@@ -57,13 +57,54 @@
                 </dl>
 
                 <div class="set-external-links">
-                    @if(!string.IsNullOrEmpty(Model.UserSet.LegoSet.SetUrl)) {
-                        <a href="@Model.UserSet.LegoSet.SetUrl" target="_blank" rel="noopener" class="btn btn-secondary">View on Rebrickable</a>
-                    }
-                    <a href="https://www.lego.com/product/@Model.UserSet.LegoSet.SetNumber.Split('-')[0]" target="_blank" rel="noopener" class="btn btn-secondary">View on LEGO.com</a>
+                    <a href="https://rebrickable.com/sets/@Model.UserSet.SetNumber/" target="_blank" rel="noopener" class="btn btn-secondary">View on Rebrickable</a>
+                    <a href="https://www.lego.com/product/@Model.UserSet.SetNumber.Split('-')[0]" target="_blank" rel="noopener" class="btn btn-secondary">View on LEGO.com</a>
                 </div>
             </div>
         </div>
+
+        @{
+            // Use the first inventory (primary version) to avoid duplicates from multiple versions
+            var primaryInventory = Model.UserSet.Set.Inventories
+                .OrderBy(i => i.Version)
+                .FirstOrDefault();
+
+            var minifigs = primaryInventory?.InventoryMinifigs
+                .Where(im => im.Minifig != null)
+                .OrderBy(im => im.Minifig!.Name)
+                .ToList() ?? [];
+
+            var totalCount = minifigs.Sum(m => m.Quantity);
+        }
+
+        @if(minifigs.Count > 0) {
+            <div class="set-minifigs">
+                <h2>Minifigures (@totalCount)</h2>
+                <div class="minifigs-grid">
+                    @foreach(var item in minifigs) {
+                        var minifig = item.Minifig!;
+                        <div class="minifig-card">
+                            @if(item.Quantity > 1) {
+                                <span class="minifig-qty-badge">×@item.Quantity</span>
+                            }
+                            @if(!string.IsNullOrEmpty(minifig.ImageUrl)) {
+                                <img src="@minifig.ImageUrl.ToThumbnail(150, 150)"
+                                     alt="@minifig.Name"
+                                     class="minifig-image"
+                                     loading="lazy" />
+                            } else {
+                                <div class="minifig-image-placeholder">
+                                    <span>No Image</span>
+                                </div>
+                            }
+                            <div class="minifig-info">
+                                <span class="minifig-name">@minifig.Name</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
 
         <div class="set-edit-form">
             <h2>Edit Set</h2>

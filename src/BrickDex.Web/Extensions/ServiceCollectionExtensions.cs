@@ -27,11 +27,12 @@ public static class ServiceCollectionExtensions {
 
     public static IServiceCollection AddBrickDexServices(this IServiceCollection services) {
         services.AddScoped<IBrickDexContext>(provider => provider.GetRequiredService<BrickDexContext>());
-        services.AddScoped<ILegoSetService, LegoSetService>();
+        services.AddScoped<IUserSetService, UserSetService>();
         services.AddScoped<IUserService, UserService>();
         services.AddSingleton<ILegoThemeCache, LegoThemeCache>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IViewPreferenceService, ViewPreferenceService>();
+        services.AddHttpClient<IRebrickableCatalogImportService, RebrickableCatalogImportService>();
 
         return services;
     }

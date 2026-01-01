@@ -54,16 +54,17 @@ public class IndexModel : PageModel {
             .CountAsync(cancellationToken);
 
         TotalParts = await _context.UserSets
-            .Include(us => us.LegoSet)
+            .Include(us => us.Set)
             .Where(us => us.UserId == user.Id && !us.IsWishlist)
-            .SumAsync(us => us.LegoSet.NumParts * us.Quantity, cancellationToken);
+            .SumAsync(us => us.Set.NumParts * us.Quantity, cancellationToken);
 
         WishlistCount = await _context.UserSets
             .Where(us => us.UserId == user.Id && us.IsWishlist)
             .CountAsync(cancellationToken);
 
         RecentSets = await _context.UserSets
-            .Include(us => us.LegoSet)
+            .Include(us => us.Set)
+                .ThenInclude(s => s.Theme)
             .Where(us => us.UserId == user.Id && !us.IsWishlist)
             .OrderByDescending(us => us.CreatedAt)
             .Take(6)

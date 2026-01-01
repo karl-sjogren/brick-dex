@@ -39,12 +39,12 @@
             <h2>Recently Added</h2>
             <div class="sets-grid">
                 @foreach(var userSet in Model.RecentSets) {
-                    <a asp-page="/Sets/Details" asp-route-id="@userSet.LegoSetId" class="set-card set-card-link">
-                        @if(!string.IsNullOrEmpty(userSet.LegoSet.ImageUrl)) {
+                    <a asp-page="/Sets/Details" asp-route-id="@userSet.Id" class="set-card set-card-link">
+                        @if(!string.IsNullOrEmpty(userSet.Set.ImageUrl)) {
                             <picture>
-                                <source media="(max-width: 480px)" srcset="@userSet.LegoSet.ImageUrl.ToThumbnail(150, 150)">
-                                <source media="(max-width: 768px)" srcset="@userSet.LegoSet.ImageUrl.ToThumbnail(200, 200)">
-                                <img src="@userSet.LegoSet.ImageUrl.ToThumbnail(250, 250)" alt="@userSet.LegoSet.Name" class="set-image" loading="lazy" />
+                                <source media="(max-width: 480px)" srcset="@userSet.Set.ImageUrl.ToThumbnail(150, 150)">
+                                <source media="(max-width: 768px)" srcset="@userSet.Set.ImageUrl.ToThumbnail(200, 200)">
+                                <img src="@userSet.Set.ImageUrl.ToThumbnail(250, 250)" alt="@userSet.Set.Name" class="set-image" loading="lazy" />
                             </picture>
                         } else {
                             <div class="set-image-placeholder">
@@ -52,11 +52,11 @@
                             </div>
                         }
                         <div class="set-info">
-                            <h3>@userSet.LegoSet.Name</h3>
-                            <p class="set-number">@userSet.LegoSet.SetNumber</p>
-                            <p class="set-details">@userSet.LegoSet.Year &bull; @userSet.LegoSet.NumParts parts</p>
-                            @if(!string.IsNullOrEmpty(userSet.LegoSet.ThemeName)) {
-                                <p class="set-theme">@userSet.LegoSet.ThemeName</p>
+                            <h3>@userSet.Set.Name</h3>
+                            <p class="set-number">@userSet.SetNumber</p>
+                            <p class="set-details">@userSet.Set.Year &bull; @userSet.Set.NumParts parts</p>
+                            @if(userSet.Set.Theme != null) {
+                                <p class="set-theme">@userSet.Set.Theme.Name</p>
                             }
                         </div>
                     </a>
