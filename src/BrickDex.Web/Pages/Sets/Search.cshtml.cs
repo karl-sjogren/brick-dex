@@ -58,6 +58,7 @@ public class SearchModel : PageModel {
 
     public string? Message { get; set; }
     public bool IsError { get; set; }
+    public Guid? AddedSetId { get; set; }
 
     public bool HasActiveFilters =>
         MinYear.HasValue || MaxYear.HasValue ||
@@ -132,7 +133,8 @@ public class SearchModel : PageModel {
         Ordering = ordering;
 
         try {
-            await _userSetService.AddToUserCollectionAsync(user.Id, setNumber, isWishlist, cancellationToken);
+            var userSet = await _userSetService.AddToUserCollectionAsync(user.Id, setNumber, isWishlist, cancellationToken);
+            AddedSetId = userSet.Id;
             Message = $"Set {setNumber} added to {(isWishlist ? "wishlist" : "collection")}!";
         } catch(InvalidOperationException ex) {
             _logger.LogWarning(ex, "Failed to add set {SetNumber}", setNumber);

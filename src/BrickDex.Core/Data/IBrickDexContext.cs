@@ -8,6 +8,7 @@ public interface IBrickDexContext {
     DbSet<User> Users { get; }
     DbSet<UserLogin> UserLogins { get; }
     DbSet<UserSet> UserSets { get; }
+    DbSet<Invite> Invites { get; }
 
     DbSet<RebrickableTheme> RebrickableThemes { get; }
     DbSet<RebrickableSet> RebrickableSets { get; }

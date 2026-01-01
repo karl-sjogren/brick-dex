@@ -1,4 +1,5 @@
 brickdex.db*
 
 wwwroot/static/
+wwwroot/assets/
 wwwroot/.vite/

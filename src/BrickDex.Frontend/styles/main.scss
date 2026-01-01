@@ -884,15 +884,19 @@ a.set-card-link {
 
 .minifig-card {
   position: relative;
+  display: block;
   background-color: $background-color;
   border: 1px solid $border-color;
   border-radius: 6px;
   padding: 0.75rem;
   text-align: center;
-  transition: box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s, border-color 0.2s;
 
   &:hover {
     box-shadow: 0 2px 8px rgb(0, 0, 0, 0.1);
+    border-color: $primary-color;
   }
 }
 
@@ -948,6 +952,45 @@ a.set-card-link {
   overflow: hidden;
 }
 
+.minifigs-grid-wrapper {
+  max-height: 420px; // Approximately 2 rows of minifig cards
+  overflow: hidden;
+  position: relative;
+
+  // Fade gradient at bottom when collapsed and overflowing
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, $white);
+    pointer-events: none;
+  }
+
+  // No overflow - remove constraints and fade
+  &.no-overflow {
+    max-height: none;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.set-minifigs.expanded .minifigs-grid-wrapper {
+  max-height: none;
+
+  &::after {
+    display: none;
+  }
+}
+
+.minifigs-toggle {
+  margin-top: 1rem;
+}
+
 
 // Error page
 .error-page {
@@ -977,6 +1020,16 @@ a.set-card-link {
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
   color: #721c24;
+}
+
+.alert a {
+  color: inherit;
+  font-weight: 600;
+  margin-left: 0.5rem;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 // Pagination
@@ -1139,6 +1192,34 @@ a.set-card-link {
   font-size: 0.875rem;
 }
 
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .user-name {
+    color: $white;
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+}
+
+.btn-signout {
+  background: none;
+  border: 1px solid rgb(255, 255, 255, 0.5);
+  color: $white;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background-color: rgb(255, 255, 255, 0.1);
+    border-color: $white;
+  }
+}
+
 // Welcome CTA and Login
 .welcome-cta {
   text-align: center;
@@ -1198,6 +1279,35 @@ a.set-card-link {
   }
 }
 
+// Access denied page
+.access-denied-page {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem 1rem;
+
+  h1 {
+    color: $danger-color;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 1rem;
+
+    &:last-of-type {
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.access-denied-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 // Login page
 .login-page {
   max-width: 400px;
@@ -1232,6 +1342,131 @@ a.set-card-link {
   .no-providers {
     color: #666;
     font-style: italic;
+  }
+}
+
+// Invites page
+.invites-page {
+  max-width: 800px;
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  > p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+
+  .create-invite-form {
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .no-invites {
+    color: #666;
+    font-style: italic;
+  }
+}
+
+.invite-url-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.invite-url-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-family: monospace;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  background-color: $white;
+}
+
+.invites-table {
+  width: 100%;
+  background-color: $white;
+  border-collapse: collapse;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid $border-color;
+  }
+
+  th {
+    background-color: $background-color;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.025rem;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background-color: rgb(0, 0, 0, 0.02);
+  }
+
+  code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.875rem;
+    background-color: $background-color;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+  }
+
+  .invite-row {
+    &.used {
+      opacity: 0.6;
+    }
+
+    &.expired {
+      opacity: 0.6;
+    }
+  }
+
+  .actions-cell {
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+.invites-table .status-badge {
+  position: static;
+  transform: none;
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+
+  &.status-active {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  &.status-used {
+    background-color: #cce5ff;
+    color: #004085;
+  }
+
+  &.status-expired {
+    background-color: #f8d7da;
+    color: #721c24;
   }
 }
 
@@ -1294,11 +1529,17 @@ a.set-card-link {
     justify-content: space-between;
     padding-top: 0.75rem;
     margin-top: 0.5rem;
+    width: 100%;
   }
 
-  .user-name {
+  // Invites table responsive
+  .invites-table {
     font-size: 0.875rem;
-    opacity: 0.9;
+
+    th,
+    td {
+      padding: 0.5rem 0.75rem;
+    }
   }
 
   // Page headers

@@ -17,6 +17,10 @@ public class DevLoginModel : PageModel {
     private const string _devProvider = "Development";
     private const string _devProviderKey = "dev-user-001";
 
+    private const string _inviteRequiredMessage =
+        "You need an invite to create an account on BrickDex, " +
+        "ask a friend with access if they can invite you.";
+
     public DevLoginModel(
         IUserService userService,
         IWebHostEnvironment environment,
@@ -26,23 +30,34 @@ public class DevLoginModel : PageModel {
         _logger = logger;
     }
 
-    public async Task<IActionResult> OnGetAsync(string? returnUrl, CancellationToken cancellationToken) {
+    public async Task<IActionResult> OnGetAsync(
+        string? returnUrl,
+        string? invite,
+        CancellationToken cancellationToken) {
         if(!_environment.IsDevelopment()) {
             _logger.LogWarning("DevLogin attempted in non-development environment");
             return NotFound();
         }
 
-        var user = await _userService.GetOrCreateFromExternalLoginAsync(
+        var (user, requiresInvite) = await _userService.GetOrCreateFromExternalLoginAsync(
             _devProvider,
             _devProviderKey,
             _devUserEmail,
             _devUserName,
             avatarUrl: null,
+            invite,
             cancellationToken);
+
+        if(requiresInvite) {
+            _logger.LogWarning("Dev user registration blocked: invite required");
+            return RedirectToPage("/Account/Login", new { error = _inviteRequiredMessage });
+        }
 
         if(user == null) {
             _logger.LogError("Could not create development user");
-            return RedirectToPage("/Account/Login", new { error = "Could not create development user." });
+            return RedirectToPage("/Account/Login", new {
+                error = "Could not create development user."
+            });
         }
 
         var claims = new List<Claim> {
@@ -51,10 +66,14 @@ public class DevLoginModel : PageModel {
             new(ClaimTypes.Name, user.DisplayName ?? user.Email)
         };
 
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var identity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal);
 
         _logger.LogInformation("Development user signed in");
 

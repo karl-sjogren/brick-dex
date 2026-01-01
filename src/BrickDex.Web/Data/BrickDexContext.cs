@@ -14,6 +14,7 @@ public class BrickDexContext : DbContext, IBrickDexContext {
     public DbSet<User> Users { get; set; }
     public DbSet<UserLogin> UserLogins { get; set; }
     public DbSet<UserSet> UserSets { get; set; }
+    public DbSet<Invite> Invites { get; set; }
 
     public DbSet<RebrickableTheme> RebrickableThemes { get; set; }
     public DbSet<RebrickableSet> RebrickableSets { get; set; }

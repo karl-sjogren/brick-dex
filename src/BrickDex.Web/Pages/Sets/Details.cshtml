@@ -78,31 +78,42 @@
         }
 
         @if(minifigs.Count > 0) {
-            <div class="set-minifigs">
+            <div class="set-minifigs" id="minifigs-section" data-total-count="@totalCount">
                 <h2>Minifigures (@totalCount)</h2>
-                <div class="minifigs-grid">
-                    @foreach(var item in minifigs) {
-                        var minifig = item.Minifig!;
-                        <div class="minifig-card">
-                            @if(item.Quantity > 1) {
-                                <span class="minifig-qty-badge">×@item.Quantity</span>
-                            }
-                            @if(!string.IsNullOrEmpty(minifig.ImageUrl)) {
-                                <img src="@minifig.ImageUrl.ToThumbnail(150, 150)"
-                                     alt="@minifig.Name"
-                                     class="minifig-image"
-                                     loading="lazy" />
-                            } else {
-                                <div class="minifig-image-placeholder">
-                                    <span>No Image</span>
+                <div class="minifigs-grid-wrapper">
+                    <div class="minifigs-grid">
+                        @foreach(var item in minifigs) {
+                            var minifig = item.Minifig!;
+                            <a href="https://rebrickable.com/minifigs/@minifig.FigNum/"
+                               target="_blank"
+                               rel="noopener"
+                               class="minifig-card"
+                               data-count="@item.Quantity">
+                                @if(item.Quantity > 1) {
+                                    <span class="minifig-qty-badge">×@item.Quantity</span>
+                                }
+                                @if(!string.IsNullOrEmpty(minifig.ImageUrl)) {
+                                    <img src="@minifig.ImageUrl.ToThumbnail(150, 150)"
+                                         alt="@minifig.Name"
+                                         class="minifig-image"
+                                         loading="lazy" />
+                                } else {
+                                    <div class="minifig-image-placeholder">
+                                        <span>No Image</span>
+                                    </div>
+                                }
+                                <div class="minifig-info">
+                                    <span class="minifig-name">@minifig.Name</span>
                                 </div>
-                            }
-                            <div class="minifig-info">
-                                <span class="minifig-name">@minifig.Name</span>
-                            </div>
-                        </div>
-                    }
+                            </a>
+                        }
+                    </div>
                 </div>
+                <button type="button" class="btn btn-secondary minifigs-toggle" id="minifigs-toggle"
+                        data-hide-text="Show less"
+                        onclick="toggleMinifigs()">
+                    Show all @totalCount minifigures
+                </button>
             </div>
         }
 
@@ -142,4 +153,47 @@
             </form>
         </div>
     </div>
+}
+
+@section Scripts {
+    <script>
+        (function() {
+            const section = document.getElementById('minifigs-section');
+            const wrapper = section?.querySelector('.minifigs-grid-wrapper');
+            const grid = section?.querySelector('.minifigs-grid');
+            const btn = document.getElementById('minifigs-toggle');
+
+            if (!section || !wrapper || !grid || !btn) return;
+
+            const totalCount = section.dataset.totalCount;
+            const showText = `Show all ${totalCount} minifigures`;
+
+            // Check if content overflows the collapsed height
+            function checkOverflow() {
+                const isExpanded = section.classList.contains('expanded');
+                if (isExpanded) return true;
+
+                // Temporarily remove max-height to measure full height
+                wrapper.style.maxHeight = 'none';
+                const fullHeight = grid.scrollHeight;
+                wrapper.style.maxHeight = '';
+
+                // Get the collapsed max-height from CSS (approx 2 rows)
+                const collapsedHeight = parseFloat(getComputedStyle(wrapper).maxHeight) || 400;
+
+                return fullHeight > collapsedHeight + 20; // 20px threshold
+            }
+
+            // Hide button and fade if no overflow
+            if (!checkOverflow()) {
+                btn.style.display = 'none';
+                wrapper.classList.add('no-overflow');
+            }
+
+            window.toggleMinifigs = function() {
+                const isExpanded = section.classList.toggle('expanded');
+                btn.textContent = isExpanded ? btn.dataset.hideText : showText;
+            };
+        })();
+    </script>
 }

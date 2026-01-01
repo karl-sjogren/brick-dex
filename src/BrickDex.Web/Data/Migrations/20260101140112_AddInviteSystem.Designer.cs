@@ -4,16 +4,19 @@ using BrickDex.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BrickDex.Web.Migrations
+namespace BrickDex.Web.Data.Migrations
 {
     [DbContext(typeof(BrickDexContext))]
-    partial class BrickDexContextModelSnapshot : ModelSnapshot
+    [Migration("20260101140112_AddInviteSystem")]
+    partial class AddInviteSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

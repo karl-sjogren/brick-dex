@@ -1,0 +1,18 @@
+@page
+@model BrickDex.Web.Pages.Account.AccessDeniedModel
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="access-denied-page">
+    <h1>Access Denied</h1>
+    <p>You don't have permission to access the requested page.</p>
+    <p>
+        If you believe this is an error, please contact the site administrator
+        or try signing in with a different account.
+    </p>
+    <div class="access-denied-actions">
+        <a asp-page="/Index" class="btn btn-primary">Go to Home</a>
+        <a asp-page="/Account/Login" class="btn btn-secondary">Sign In</a>
+    </div>
+</div>

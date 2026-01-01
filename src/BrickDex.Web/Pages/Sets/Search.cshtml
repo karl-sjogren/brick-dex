@@ -79,6 +79,9 @@
 @if(!string.IsNullOrEmpty(Model.Message)) {
     <div class="alert @(Model.IsError ? "alert-error" : "alert-success")">
         @Model.Message
+        @if(Model.AddedSetId.HasValue) {
+            <a asp-page="/Sets/Details" asp-route-id="@Model.AddedSetId">View set</a>
+        }
     </div>
 }
 

@@ -1,0 +1,110 @@
+@page
+@model BrickDex.Web.Pages.Account.InvitesModel
+@{
+    ViewData["Title"] = "Invite Friends";
+}
+
+<div class="invites-page">
+    <h1>Invite Friends</h1>
+    <p>Create invite links to share with friends so they can join BrickDex.</p>
+
+    <form method="post" asp-page-handler="Create" class="create-invite-form">
+        <button type="submit" class="btn btn-primary">Create New Invite</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage)) {
+        <div class="alert alert-success">
+            <p>@Model.SuccessMessage</p>
+            <div class="invite-url-container">
+                <input type="text"
+                       id="inviteUrl"
+                       value="@Model.NewInviteUrl"
+                       readonly
+                       class="invite-url-input" />
+                <button type="button"
+                        onclick="copyInviteUrl()"
+                        class="btn btn-secondary">
+                    Copy
+                </button>
+            </div>
+        </div>
+    }
+
+    <h2>Your Invites</h2>
+
+    @if (Model.Invites.Count == 0) {
+        <p class="no-invites">You haven't created any invites yet.</p>
+    } else {
+        <table class="invites-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Created</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var invite in Model.Invites) {
+                    var isExpired = invite.ExpiresAt <= Model.Now;
+                    var isUsed = invite.UsedByUserId != null;
+                    var statusClass = isUsed ? "used" : isExpired ? "expired" : "active";
+                    var isActive = !isUsed && !isExpired;
+
+                    <tr class="invite-row @statusClass">
+                        <td>
+                            <code>@invite.Code</code>
+                        </td>
+                        <td>@invite.CreatedAt.ToLocalTime().ToString("g")</td>
+                        <td>@invite.ExpiresAt.ToLocalTime().ToString("g")</td>
+                        <td>
+                            @if (isUsed) {
+                                <span class="status-badge status-used">
+                                    Used by @(invite.UsedByUser?.DisplayName
+                                        ?? invite.UsedByUser?.Email
+                                        ?? "Unknown")
+                                </span>
+                            } else if (isExpired) {
+                                <span class="status-badge status-expired">Expired</span>
+                            } else {
+                                <span class="status-badge status-active">Active</span>
+                            }
+                        </td>
+                        <td class="actions-cell">
+                            @if (isActive) {
+                                <button type="button"
+                                        class="btn btn-sm btn-secondary"
+                                        onclick="copyInviteLink(this, '@invite.Code')"
+                                        title="Copy invite link">
+                                    Copy Link
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<script>
+    function copyInviteUrl() {
+        const input = document.getElementById('inviteUrl');
+        input.select();
+        navigator.clipboard.writeText(input.value);
+    }
+
+    async function copyInviteLink(btn, code) {
+        const url = `${window.location.origin}/Account/Login?invite=${code}`;
+        await navigator.clipboard.writeText(url);
+
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }, 1500);
+    }
+</script>

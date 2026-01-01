@@ -33,23 +33,24 @@ public class UserService : IUserService {
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
-    public async Task<User?> GetOrCreateFromExternalLoginAsync(
+    public async Task<(User? User, bool RequiresInvite)> GetOrCreateFromExternalLoginAsync(
         string provider,
         string providerKey,
         string email,
         string? displayName,
         string? avatarUrl,
+        string? inviteCode,
         CancellationToken cancellationToken = default) {
-        // Check for existing login
+        // Check for existing login - existing users can always sign in
         var existingLogin = await _context.UserLogins
             .Include(l => l.User)
             .FirstOrDefaultAsync(l => l.Provider == provider && l.ProviderKey == providerKey, cancellationToken);
 
         if(existingLogin != null) {
-            return existingLogin.User;
+            return (existingLogin.User, false);
         }
 
-        // Check for existing user by email (link accounts)
+        // Check for existing user by email (link accounts - no invite needed)
         var existingUser = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
@@ -69,7 +70,35 @@ public class UserService : IUserService {
             await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Linked {Provider} login to existing user {Email}", provider, email);
-            return existingUser;
+            return (existingUser, false);
+        }
+
+        // NEW USER REGISTRATION - Check invite requirement
+        var isFirstUser = !await _context.Users.AnyAsync(cancellationToken);
+
+        Invite? invite = null;
+        if(!isFirstUser) {
+            // Need valid invite for subsequent users
+            if(string.IsNullOrEmpty(inviteCode)) {
+                _logger.LogInformation(
+                    "Registration blocked for {Email}: no invite code provided",
+                    email);
+                return (null, true);
+            }
+
+            invite = await _context.Invites
+                .FirstOrDefaultAsync(i =>
+                    i.Code == inviteCode &&
+                    i.UsedByUserId == null &&
+                    i.ExpiresAt > now,
+                    cancellationToken);
+
+            if(invite == null) {
+                _logger.LogInformation(
+                    "Registration blocked for {Email}: invalid or expired invite code",
+                    email);
+                return (null, true);
+            }
         }
 
         // Create new user
@@ -93,10 +122,30 @@ public class UserService : IUserService {
 
         _context.Users.Add(user);
         _context.UserLogins.Add(login);
+
+        // Consume the invite if one was used
+        if(invite != null) {
+            invite.UsedByUserId = user.Id;
+            invite.UsedAt = now;
+            invite.UpdatedAt = now;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Created new user {Email} via {Provider}", email, provider);
-        return user;
+        if(isFirstUser) {
+            _logger.LogInformation(
+                "Created first user {Email} via {Provider}",
+                email,
+                provider);
+        } else {
+            _logger.LogInformation(
+                "Created new user {Email} via {Provider} using invite {InviteCode}",
+                email,
+                provider,
+                inviteCode);
+        }
+
+        return (user, false);
     }
 
     public async Task<User?> GetCurrentUserAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default) {

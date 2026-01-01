@@ -1,3 +1,4 @@
+@using BrickDex.Core.Models
 @model BrickDex.Web.ViewModels.SetListViewModel
 
 <p class="results-count">@Model.TotalCount sets (page @Model.CurrentPage of @Model.TotalPages)</p>
@@ -60,18 +61,24 @@
             </thead>
             <tbody>
                 @foreach(var set in Model.Sets) {
-                    <tr>
-                        <td class="col-image">
-                            @if(!string.IsNullOrEmpty(set.ImageUrl)) {
-                                <picture>
-                                    <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(60, 60)">
-                                    <img src="@set.ImageUrl.ToThumbnail(100, 100)" alt="@set.Name" class="set-thumbnail" loading="lazy" />
-                                </picture>
-                            } else {
-                                <div class="set-thumbnail-placeholder">
-                                    <span>No Image</span>
-                                </div>
-                            }
+                    var statusClass = set.Status != SetStatus.None ? $"has-status status-{set.Status.ToString().ToLowerInvariant()}" : "";
+                    <tr class="@statusClass">
+                        <td class="image-cell">
+                            <div class="image-wrapper">
+                                @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                                    <picture>
+                                        <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(60, 60)">
+                                        <img src="@set.ImageUrl.ToThumbnail(100, 100)" alt="@set.Name" class="set-thumbnail" loading="lazy" />
+                                    </picture>
+                                } else {
+                                    <div class="set-thumbnail-placeholder">
+                                        <span>No Image</span>
+                                    </div>
+                                }
+                                @if(set.Status != SetStatus.None) {
+                                    <span class="status-badge status-@set.Status.ToString().ToLowerInvariant()">@(set.Status == SetStatus.InStorage ? "In Storage" : set.Status.ToString())</span>
+                                }
+                            </div>
                         </td>
                         <td class="col-name">
                             <a asp-page="/Sets/Details" asp-route-id="@set.Id">@set.Name</a>
@@ -110,20 +117,26 @@
 } else {
     <div class="sets-grid">
         @foreach(var set in Model.Sets) {
+            var statusClass = set.Status != SetStatus.None ? $"has-status status-{set.Status.ToString().ToLowerInvariant()}" : "";
             @if(Model.ShowActions) {
-                <div class="set-card">
+                <div class="set-card @statusClass">
                     <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card-link-area">
-                        @if(!string.IsNullOrEmpty(set.ImageUrl)) {
-                            <picture>
-                                <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
-                                <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
-                                <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
-                            </picture>
-                        } else {
-                            <div class="set-image-placeholder">
-                                <span>No Image</span>
-                            </div>
-                        }
+                        <div class="set-image-wrapper">
+                            @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                                <picture>
+                                    <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
+                                    <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
+                                    <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                                </picture>
+                            } else {
+                                <div class="set-image-placeholder">
+                                    <span>No Image</span>
+                                </div>
+                            }
+                            @if(set.Status != SetStatus.None) {
+                                <span class="status-badge status-@set.Status.ToString().ToLowerInvariant()">@(set.Status == SetStatus.InStorage ? "In Storage" : set.Status.ToString())</span>
+                            }
+                        </div>
                         <div class="set-info">
                             <h3>@set.Name</h3>
                             <p class="set-number">@set.SetNumber</p>
@@ -153,18 +166,23 @@
                     </div>
                 </div>
             } else {
-                <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card set-card-link">
-                    @if(!string.IsNullOrEmpty(set.ImageUrl)) {
-                        <picture>
-                            <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
-                            <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
-                            <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
-                        </picture>
-                    } else {
-                        <div class="set-image-placeholder">
-                            <span>No Image</span>
-                        </div>
-                    }
+                <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card set-card-link @statusClass">
+                    <div class="set-image-wrapper">
+                        @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                            <picture>
+                                <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
+                                <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
+                                <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                            </picture>
+                        } else {
+                            <div class="set-image-placeholder">
+                                <span>No Image</span>
+                            </div>
+                        }
+                        @if(set.Status != SetStatus.None) {
+                            <span class="status-badge status-@set.Status.ToString().ToLowerInvariant()">@(set.Status == SetStatus.InStorage ? "In Storage" : set.Status.ToString())</span>
+                        }
+                    </div>
                     <div class="set-info">
                         <h3>@set.Name</h3>
                         <p class="set-number">@set.SetNumber</p>

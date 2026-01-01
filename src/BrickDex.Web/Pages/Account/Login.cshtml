@@ -6,11 +6,29 @@
 
 <div class="login-page">
     <h1>Sign In to BrickDex</h1>
-    <p>Sign in with your preferred provider to manage your LEGO collection.</p>
+
+    @if (Model.IsFirstUser) {
+        <p class="welcome-first">
+            Welcome! You're the first user &mdash; sign in to get started.
+        </p>
+    } else if (Model.HasValidInvite) {
+        <div class="alert alert-success">
+            You have a valid invite! Sign in with your preferred provider to
+            create your account.
+        </div>
+    } else if (!string.IsNullOrEmpty(Model.Invite)) {
+        <div class="alert alert-warning">
+            The invite code provided is invalid or has expired.
+        </div>
+        <p>Sign in with your preferred provider to manage your LEGO collection.</p>
+    } else {
+        <p>Sign in with your preferred provider to manage your LEGO collection.</p>
+    }
 
     <div class="login-providers">
         @if (Model.GoogleEnabled) {
             <form method="post" asp-page-handler="Google">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
                 <button type="submit" class="btn btn-google">
                     Sign in with Google
                 </button>
@@ -19,13 +37,61 @@
 
         @if (Model.GitHubEnabled) {
             <form method="post" asp-page-handler="GitHub">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
                 <button type="submit" class="btn btn-github">
                     Sign in with GitHub
                 </button>
             </form>
         }
 
-        @if (!Model.GoogleEnabled && !Model.GitHubEnabled && !Model.IsDevelopment) {
+        @if (Model.FacebookEnabled) {
+            <form method="post" asp-page-handler="Facebook">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
+                <button type="submit" class="btn btn-facebook">
+                    Sign in with Facebook
+                </button>
+            </form>
+        }
+
+        @if (Model.MicrosoftEnabled) {
+            <form method="post" asp-page-handler="Microsoft">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
+                <button type="submit" class="btn btn-microsoft">
+                    Sign in with Microsoft
+                </button>
+            </form>
+        }
+
+        @if (Model.TwitchEnabled) {
+            <form method="post" asp-page-handler="Twitch">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
+                <button type="submit" class="btn btn-twitch">
+                    Sign in with Twitch
+                </button>
+            </form>
+        }
+
+        @if (Model.DiscordEnabled) {
+            <form method="post" asp-page-handler="Discord">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
+                <button type="submit" class="btn btn-discord">
+                    Sign in with Discord
+                </button>
+            </form>
+        }
+
+        @if (Model.AppleEnabled) {
+            <form method="post" asp-page-handler="Apple">
+                <input type="hidden" name="Invite" value="@Model.Invite" />
+                <button type="submit" class="btn btn-apple">
+                    Sign in with Apple
+                </button>
+            </form>
+        }
+
+        @if (!Model.GoogleEnabled && !Model.GitHubEnabled && !Model.FacebookEnabled &&
+             !Model.MicrosoftEnabled && !Model.TwitchEnabled && !Model.DiscordEnabled &&
+             !Model.AppleEnabled && !Model.IsDevelopment) {
             <p class="no-providers">No authentication providers are configured.</p>
         }
 
@@ -33,7 +99,10 @@
             <div class="dev-login">
                 <hr />
                 <p class="dev-notice">Development Mode</p>
-                <a asp-page="/Account/DevLogin" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-dev">
+                <a asp-page="/Account/DevLogin"
+                   asp-route-returnUrl="@Model.ReturnUrl"
+                   asp-route-invite="@Model.Invite"
+                   class="btn btn-dev">
                     Sign in as Dev User
                 </a>
             </div>

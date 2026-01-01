@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions {
         services.AddScoped<IBrickDexContext>(provider => provider.GetRequiredService<BrickDexContext>());
         services.AddScoped<IUserSetService, UserSetService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IInviteService, InviteService>();
         services.AddSingleton<ILegoThemeCache, LegoThemeCache>();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IViewPreferenceService, ViewPreferenceService>();
