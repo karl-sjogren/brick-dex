@@ -4,6 +4,7 @@ using BrickDex.Core.Options;
 using BrickDex.Core.Services;
 using BrickDex.Web.Data;
 using BrickDex.Web.Options;
+using BrickDex.Web.Services;
 using Microsoft.Extensions.Options;
 
 namespace BrickDex.Web.Extensions;
@@ -34,6 +35,7 @@ public static class ServiceCollectionExtensions {
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IViewPreferenceService, ViewPreferenceService>();
         services.AddHttpClient<IRebrickableCatalogImportService, RebrickableCatalogImportService>();
+        services.AddHostedService<MigrationHostedService>();
 
         return services;
     }

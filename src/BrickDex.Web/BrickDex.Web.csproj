@@ -1,12 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <UserSecretsId>46b5049c-1d81-463f-acaa-d59310b0b0ef</UserSecretsId>
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <!-- Exclude node_modules from dotnet watch -->
   <ItemGroup>
     <Watch Remove="..\BrickDex.Frontend\node_modules\**\*" />
+  </ItemGroup>
+
+  <!-- Force include of Vite 5 manifest -->
+  <ItemGroup>
+    <Content Include="wwwroot\.vite\**" CopyToPublishDirectory="PreserveNewest" Exclude="$(DefaultItemExcludes)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,6 +20,7 @@
     <PackageReference Include="AspNet.Security.OAuth.Discord" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="AspNet.Security.OAuth.Twitch" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />

@@ -273,14 +273,21 @@ h3 {
 
 // Cards
 .set-card {
+  position: relative;
   background-color: $white;
   border: 1px solid $border-color;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   transition: box-shadow 0.2s;
 
   &:hover {
     box-shadow: 0 4px 12px rgb(0, 0, 0, 0.15);
+  }
+
+  .set-card-link-area,
+  .set-image-wrapper {
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
   }
 }
 
@@ -321,16 +328,16 @@ $status-building: #ffc107;   // Warning yellow
 $status-built: $success-color;
 $status-sold: #6f42c1;       // Purple
 
-.set-card .status-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  color: $white;
-  font-size: 0.75rem;
+// Base status badge styles (for standalone spans)
+.status-badge {
+  display: inline-block;
+  font-size: 0.625rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
   text-transform: uppercase;
+  color: $white;
+  background-color: #6c757d;
 
   &.status-ordered {
     background-color: $status-ordered;
@@ -351,6 +358,121 @@ $status-sold: #6f42c1;       // Purple
 
   &.status-sold {
     background-color: $status-sold;
+  }
+}
+
+.set-card .status-dropdown {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid $border-color;
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    color: $white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.375rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background-color: #6c757d;
+
+    &.status-ordered {
+      background-color: $status-ordered;
+    }
+
+    &.status-instorage {
+      background-color: $status-instorage;
+    }
+
+    &.status-building {
+      background-color: $status-building;
+      color: $text-color;
+    }
+
+    &.status-built {
+      background-color: $status-built;
+    }
+
+    &.status-sold {
+      background-color: $status-sold;
+    }
+
+    .dropdown-arrow {
+      font-size: 0.6rem;
+      transition: transform 0.2s;
+    }
+  }
+
+  &.open .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .status-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    overflow: hidden;
+    z-index: 1000;
+
+    .status-option {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      text-align: left;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      color: $text-color;
+
+      &:hover {
+        background: $background-color;
+      }
+
+      &.selected {
+        font-weight: 600;
+      }
+
+      &.status-ordered {
+        border-left: 3px solid $status-ordered;
+      }
+
+      &.status-instorage {
+        border-left: 3px solid $status-instorage;
+      }
+
+      &.status-building {
+        border-left: 3px solid $status-building;
+      }
+
+      &.status-built {
+        border-left: 3px solid $status-built;
+      }
+
+      &.status-sold {
+        border-left: 3px solid $status-sold;
+      }
+
+      &.status-none {
+        border-left: 3px solid #adb5bd;
+      }
+    }
+  }
+
+  &.open .status-dropdown-menu {
+    display: block;
   }
 }
 
@@ -683,8 +805,9 @@ a.set-card-link {
   }
 
   .image-cell {
-    width: 60px;
+    width: 100px;
     padding: 0.5rem;
+    text-align: center;
   }
 
   .image-wrapper {
@@ -698,38 +821,119 @@ a.set-card-link {
     object-fit: contain;
   }
 
-  .status-badge {
+  .status-dropdown {
     position: absolute;
     bottom: -4px;
     left: 50%;
     transform: translateX(-50%);
-    color: $white;
-    font-size: 0.625rem;
-    font-weight: 600;
-    padding: 0.125rem 0.375rem;
-    border-radius: 3px;
-    text-transform: uppercase;
-    white-space: nowrap;
+    z-index: 10;
 
-    &.status-ordered {
-      background-color: $status-ordered;
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      border: none;
+      color: $white;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 0.125rem 0.375rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      background-color: #6c757d;
+
+      &.status-ordered {
+        background-color: $status-ordered;
+      }
+
+      &.status-instorage {
+        background-color: $status-instorage;
+      }
+
+      &.status-building {
+        background-color: $status-building;
+        color: $text-color;
+      }
+
+      &.status-built {
+        background-color: $status-built;
+      }
+
+      &.status-sold {
+        background-color: $status-sold;
+      }
+
+      .dropdown-arrow {
+        font-size: 0.5rem;
+        transition: transform 0.2s;
+      }
     }
 
-    &.status-instorage {
-      background-color: $status-instorage;
+    &.open .dropdown-arrow {
+      transform: rotate(180deg);
     }
 
-    &.status-building {
-      background-color: $status-building;
-      color: $text-color;
+    .status-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 120px;
+      background: $white;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+      overflow: hidden;
+
+      .status-option {
+        display: block;
+        width: 100%;
+        padding: 6px 10px;
+        text-align: left;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 0.75rem;
+        color: $text-color;
+
+        &:hover {
+          background: $background-color;
+        }
+
+        &.selected {
+          font-weight: 600;
+        }
+
+        &.status-ordered {
+          border-left: 3px solid $status-ordered;
+        }
+
+        &.status-instorage {
+          border-left: 3px solid $status-instorage;
+        }
+
+        &.status-building {
+          border-left: 3px solid $status-building;
+        }
+
+        &.status-built {
+          border-left: 3px solid $status-built;
+        }
+
+        &.status-sold {
+          border-left: 3px solid $status-sold;
+        }
+
+        &.status-none {
+          border-left: 3px solid #adb5bd;
+        }
+      }
     }
 
-    &.status-built {
-      background-color: $status-built;
-    }
-
-    &.status-sold {
-      background-color: $status-sold;
+    &.open .status-dropdown-menu {
+      display: block;
     }
   }
 

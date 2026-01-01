@@ -3,6 +3,12 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home";
+
+    string GetStatusDisplayName(SetStatus status) => status switch {
+        SetStatus.None => "No Status",
+        SetStatus.InStorage => "In Storage",
+        _ => status.ToString()
+    };
 }
 
 <div class="hero">
@@ -41,32 +47,46 @@
             <div class="sets-grid">
                 @foreach(var userSet in Model.RecentSets) {
                     var statusClass = userSet.Status != SetStatus.None ? $"has-status status-{userSet.Status.ToString().ToLowerInvariant()}" : "";
-                    <a asp-page="/Sets/Details" asp-route-id="@userSet.Id" class="set-card set-card-link @statusClass">
-                        <div class="set-image-wrapper">
-                            @if(!string.IsNullOrEmpty(userSet.Set.ImageUrl)) {
-                                <picture>
-                                    <source media="(max-width: 480px)" srcset="@userSet.Set.ImageUrl.ToThumbnail(150, 150)">
-                                    <source media="(max-width: 768px)" srcset="@userSet.Set.ImageUrl.ToThumbnail(200, 200)">
-                                    <img src="@userSet.Set.ImageUrl.ToThumbnail(250, 250)" alt="@userSet.Set.Name" class="set-image" loading="lazy" />
-                                </picture>
-                            } else {
-                                <div class="set-image-placeholder">
-                                    <span>No Image</span>
-                                </div>
-                            }
-                            @if(userSet.Status != SetStatus.None) {
-                                <span class="status-badge status-@userSet.Status.ToString().ToLowerInvariant()">@(userSet.Status == SetStatus.InStorage ? "In Storage" : userSet.Status.ToString())</span>
-                            }
+                    <div class="set-card @statusClass">
+                        <a asp-page="/Sets/Details" asp-route-id="@userSet.Id" class="set-card-link-area">
+                            <div class="set-image-wrapper">
+                                @if(!string.IsNullOrEmpty(userSet.Set.ImageUrl)) {
+                                    <picture>
+                                        <source media="(max-width: 480px)" srcset="@userSet.Set.ImageUrl.ToThumbnail(150, 150)">
+                                        <source media="(max-width: 768px)" srcset="@userSet.Set.ImageUrl.ToThumbnail(200, 200)">
+                                        <img src="@userSet.Set.ImageUrl.ToThumbnail(250, 250)" alt="@userSet.Set.Name" class="set-image" loading="lazy" />
+                                    </picture>
+                                } else {
+                                    <div class="set-image-placeholder">
+                                        <span>No Image</span>
+                                    </div>
+                                }
+                            </div>
+                            <div class="set-info">
+                                <h3>@userSet.Set.Name</h3>
+                                <p class="set-number">@userSet.SetNumber</p>
+                                <p class="set-details">@userSet.Set.Year &bull; @userSet.Set.NumParts parts</p>
+                                @if(userSet.Set.Theme != null) {
+                                    <p class="set-theme">@userSet.Set.Theme.Name</p>
+                                }
+                            </div>
+                        </a>
+                        <div class="status-dropdown" data-user-set-id="@userSet.Id" data-current-status="@((int)userSet.Status)">
+                            <button type="button" class="status-badge status-@userSet.Status.ToString().ToLowerInvariant()">
+                                @GetStatusDisplayName(userSet.Status)
+                                <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="status-dropdown-menu">
+                                @foreach(var status in Enum.GetValues<SetStatus>()) {
+                                    <button type="button"
+                                            class="status-option status-@status.ToString().ToLowerInvariant() @(status == userSet.Status ? "selected" : "")"
+                                            data-status="@((int)status)">
+                                        @GetStatusDisplayName(status)
+                                    </button>
+                                }
+                            </div>
                         </div>
-                        <div class="set-info">
-                            <h3>@userSet.Set.Name</h3>
-                            <p class="set-number">@userSet.SetNumber</p>
-                            <p class="set-details">@userSet.Set.Year &bull; @userSet.Set.NumParts parts</p>
-                            @if(userSet.Set.Theme != null) {
-                                <p class="set-theme">@userSet.Set.Theme.Name</p>
-                            }
-                        </div>
-                    </a>
+                    </div>
                 }
             </div>
         </div>

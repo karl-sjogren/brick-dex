@@ -234,12 +234,23 @@ jobs:
       run: dotnet restore --verbosity minimal
 
     - name: Publish application
-      run: dotnet publish --output ./artifacts --configuration Release
-      working-directory: ./
+      run: dotnet publish --output ./artifacts --no-restore -r linux-x64
+      working-directory: ./src/BrickDex.Web/
+
+    - name: Publish functions
+      run: dotnet publish --output ./artifacts --no-restore -r linux-x64
+      working-directory: ./src/BrickDex.Functions/
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v5
       with:
-        name: publish-artifacts
-        path: ./artifacts/
+        name: app-artifacts
+        path: ./src/BrickDex.Web/artifacts/
+        if-no-files-found: error
+
+    - name: Upload function artifacts
+      uses: actions/upload-artifact@v5
+      with:
+        name: function-artifacts
+        path: ./src/BrickDex.Functions/artifacts/
         if-no-files-found: error

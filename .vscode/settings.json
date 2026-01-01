@@ -9,4 +9,10 @@
     ".vs/": true
   },
   "dotnet.defaultSolution": "BrickDex.slnx",
+  "azureFunctions.projectSubpath": "src\\BrickDex.Functions",
+  "azureFunctions.deploySubpath": "src\\BrickDex.Functions/bin/Release/net10.0/publish",
+  "azureFunctions.projectLanguage": "C#",
+  "azureFunctions.projectRuntime": "~4",
+  "debug.internalConsoleOptions": "neverOpen",
+  "azureFunctions.preDeployTask": "publish (functions)",
 }

@@ -74,7 +74,8 @@ public class IndexModel : PageModel {
             CurrentPage = CurrentPage,
             TotalCount = result.TotalCount,
             TotalPages = result.TotalPages,
-            ShowActions = false
+            ShowActions = false,
+            ShowStatusDropdown = true
         };
 
         return Page();

@@ -6,6 +6,7 @@
     <Project Path="src/BrickDex.AppHost/BrickDex.AppHost.csproj" />
     <Project Path="src/BrickDex.Core/BrickDex.Core.csproj" />
     <Project Path="src/BrickDex.Frontend/BrickDex.Frontend.csproj" />
+    <Project Path="src/BrickDex.Functions/BrickDex.Functions.csproj" />
     <Project Path="src/BrickDex.ServiceDefaults/BrickDex.ServiceDefaults.csproj" />
     <Project Path="src/BrickDex.Web/BrickDex.Web.csproj" />
   </Folder>

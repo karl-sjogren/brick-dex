@@ -3,7 +3,8 @@ using BrickDex.Core.Services.Rebrickable;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using RebrickableSetEntity = BrickDex.Core.Models.Rebrickable.RebrickableSet;
+using RebrickableSet = BrickDex.Core.Models.Rebrickable.RebrickableSet;
+using RebrickableTheme = BrickDex.Core.Models.Rebrickable.RebrickableTheme;
 
 namespace BrickDex.Web.Pages.Sets;
 
@@ -51,7 +52,7 @@ public class SearchModel : PageModel {
     [BindProperty(SupportsGet = true)]
     public string? Ordering { get; set; }
 
-    public IReadOnlyList<RebrickableSetEntity> SearchResults { get; set; } = [];
+    public IReadOnlyList<RebrickableSet> SearchResults { get; set; } = [];
     public IReadOnlyList<RebrickableTheme> Themes { get; set; } = [];
     public int TotalCount { get; set; }
     public int TotalPages => TotalCount > 0 ? (int)Math.Ceiling((double)TotalCount / _pageSize) : 0;

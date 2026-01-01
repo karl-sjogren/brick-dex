@@ -9,10 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BrickDex.Functions\BrickDex.Functions.csproj" />
     <ProjectReference Include="..\BrickDex.Web\BrickDex.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Azure" />
+    <PackageReference Include="Aspire.Hosting.Azure.AppService" />
+    <PackageReference Include="Aspire.Hosting.Azure.Functions" />
+    <PackageReference Include="Aspire.Hosting.Azure.KeyVault" />
+    <PackageReference Include="Aspire.Hosting.Azure.Sql" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlServer.Extensions" />
   </ItemGroup>
 

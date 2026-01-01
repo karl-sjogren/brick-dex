@@ -11,6 +11,7 @@ public class SetListViewModel {
     public required int TotalCount { get; init; }
     public required int TotalPages { get; init; }
     public bool ShowActions { get; init; }
+    public bool ShowStatusDropdown { get; init; }
 
     public string GetSortIndicator(string column) {
         if(!string.Equals(SortBy, column, StringComparison.OrdinalIgnoreCase)) {

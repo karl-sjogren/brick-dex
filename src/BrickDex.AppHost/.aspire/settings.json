@@ -1,0 +1,7 @@
+{
+  "azure:tenant": "f9dde12d-cb22-4dd7-82b2-70b7aa1d4a89",
+  "azure:subscription": "df49b232-d53f-43c0-a5a8-aa2c2ec9e917",
+  "azure:location": "swedencentral",
+  "azure:resourceGroup": "rg-brickdex",
+  "appHostPath": "../BrickDex.AppHost.csproj"
+}

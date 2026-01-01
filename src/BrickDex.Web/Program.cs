@@ -1,4 +1,8 @@
+using System.Security.Claims;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
 using BrickDex.Core.Contracts;
+using BrickDex.Core.Models;
 using BrickDex.ServiceDefaults;
 using BrickDex.Web.Data;
 using BrickDex.Web.Extensions;
@@ -14,6 +18,16 @@ try {
     Log.Information("Starting BrickDex web application");
 
     var builder = WebApplication.CreateBuilder(args);
+
+    if(builder.Environment.IsProduction()) {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri("https://brickdex-keyvault.vault.azure.net/"),
+            new DefaultAzureCredential(),
+            new AzureKeyVaultConfigurationOptions {
+                ReloadInterval = TimeSpan.FromMinutes(5)
+            }
+        );
+    }
 
     builder.AddServiceDefaults();
 
@@ -110,9 +124,36 @@ try {
 
     app.MapRazorPages();
 
+    // API endpoints
+    var apiGroup = app.MapGroup("/api").RequireAuthorization();
+
+    apiGroup.MapPost("/usersets/{id:guid}/status", async (
+        Guid id,
+        UpdateStatusRequest request,
+        IUserSetService userSetService,
+        IUserService userService,
+        ClaimsPrincipal user) => {
+            var currentUser = await userService.GetCurrentUserAsync(user);
+            if(currentUser == null) {
+                return Results.Unauthorized();
+            }
+
+            var userSet = await userSetService.GetUserSetAsync(currentUser.Id, id);
+            if(userSet == null) {
+                return Results.NotFound();
+            }
+
+            userSet.Status = request.Status;
+            await userSetService.UpdateUserSetAsync(userSet);
+
+            return Results.Ok(new { status = userSet.Status.ToString() });
+        });
+
     await app.RunAsync();
 } catch(Exception ex) {
     Log.Fatal(ex, "Application terminated unexpectedly");
 } finally {
     await Log.CloseAndFlushAsync();
 }
+
+internal record UpdateStatusRequest(SetStatus Status);

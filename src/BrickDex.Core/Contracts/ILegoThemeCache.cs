@@ -1,4 +1,4 @@
-using BrickDex.Core.Services.Rebrickable;
+using BrickDex.Core.Models.Rebrickable;
 
 namespace BrickDex.Core.Contracts;
 

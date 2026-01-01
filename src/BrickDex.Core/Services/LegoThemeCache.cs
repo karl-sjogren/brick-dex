@@ -1,11 +1,14 @@
 using BrickDex.Core.Contracts;
-using BrickDex.Core.Services.Rebrickable;
+using BrickDex.Core.Data;
+using BrickDex.Core.Models.Rebrickable;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace BrickDex.Core.Services;
 
 public class LegoThemeCache : ILegoThemeCache {
-    private readonly IRebrickableClient _rebrickableClient;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<LegoThemeCache> _logger;
     private readonly SemaphoreSlim _lock = new(1, 1);
@@ -14,8 +17,8 @@ public class LegoThemeCache : ILegoThemeCache {
     private IReadOnlyList<RebrickableTheme>? _cachedThemes;
     private DateTimeOffset _cacheExpiry = DateTimeOffset.MinValue;
 
-    public LegoThemeCache(IRebrickableClient rebrickableClient, TimeProvider timeProvider, ILogger<LegoThemeCache> logger) {
-        _rebrickableClient = rebrickableClient;
+    public LegoThemeCache(IServiceScopeFactory scopeFactory, TimeProvider timeProvider, ILogger<LegoThemeCache> logger) {
+        _scopeFactory = scopeFactory;
         _timeProvider = timeProvider;
         _logger = logger;
     }
@@ -33,20 +36,16 @@ public class LegoThemeCache : ILegoThemeCache {
                 return _cachedThemes;
             }
 
-            _logger.LogInformation("Loading themes from Rebrickable API");
+            _logger.LogInformation("Loading themes from database");
 
-            var allThemes = new List<RebrickableTheme>();
-            var page = 1;
-            var hasMore = true;
+            using var scope = _scopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IBrickDexContext>();
 
-            while(hasMore) {
-                var result = await _rebrickableClient.GetThemesAsync(page, 1000, cancellationToken);
-                allThemes.AddRange(result.Results);
-                hasMore = result.Next != null;
-                page++;
-            }
+            _cachedThemes = await context.RebrickableThemes
+                .AsNoTracking()
+                .OrderBy(t => t.Name)
+                .ToListAsync(cancellationToken);
 
-            _cachedThemes = allThemes.OrderBy(t => t.Name).ToList();
             _cacheExpiry = _timeProvider.GetUtcNow().Add(_cacheDuration);
 
             _logger.LogInformation("Cached {Count} themes", _cachedThemes.Count);

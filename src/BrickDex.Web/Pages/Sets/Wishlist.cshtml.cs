@@ -74,7 +74,8 @@ public class WishlistModel : PageModel {
             CurrentPage = CurrentPage,
             TotalCount = result.TotalCount,
             TotalPages = result.TotalPages,
-            ShowActions = true
+            ShowActions = true,
+            ShowStatusDropdown = false
         };
 
         return Page();

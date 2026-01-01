@@ -2086,47 +2086,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"BrickDex.Frontend@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "BrickDex.Frontend@workspace:."
-  dependencies:
-    "@codecov/vite-plugin": "npm:^1.9.1"
-    "@stylistic/eslint-plugin-js": "npm:^4.4.1"
-    "@stylistic/stylelint-plugin": "npm:^4.0.0"
-    "@testing-library/dom": "npm:^10.4.1"
-    "@vitest/browser": "npm:^4.0.16"
-    "@vitest/coverage-v8": "npm:^4.0.16"
-    "@vitest/eslint-plugin": "npm:^1.5.1"
-    "@vitest/ui": "npm:^4.0.14"
-    autoprefixer: "npm:^10.4.22"
-    browserslist: "npm:^4.28.1"
-    cssnano: "npm:^7.1.2"
-    esbuild: "npm:^0.27.0"
-    esbuild-plugin-browserslist: "npm:^2.0.0"
-    eslint: "npm:^9.39.1"
-    eslint-plugin-compat: "npm:^6.0.2"
-    eslint-plugin-jsdoc: "npm:^61.4.1"
-    eslint-plugin-testing-library: "npm:^7.13.5"
-    jsdom: "npm:^27.4.0"
-    jsdom-testing-mocks: "npm:^1.16.0"
-    lit: "npm:^3.2.1"
-    postcss: "npm:^8.5.6"
-    postcss-scss: "npm:^4.0.9"
-    rollup-plugin-copy: "npm:^3.5.0"
-    rollup-plugin-visualizer: "npm:^6.0.5"
-    sass: "npm:^1.97.1"
-    stylelint: "npm:^16.26.1"
-    stylelint-config-standard: "npm:^39.0.1"
-    stylelint-config-standard-scss: "npm:^16.0.0"
-    typescript: "npm:^5.9.3"
-    undici: "npm:^7.16.0"
-    vite: "npm:^7.3.0"
-    vite-plugin-mkcert: "npm:^1.17.9"
-    vitest: "npm:^4.0.16"
-    webdriverio: "npm:^9.22.0"
-  languageName: unknown
-  linkType: soft
-
 "abbrev@npm:^1.0.0":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
@@ -2641,6 +2600,47 @@ __metadata:
   checksum: 10/fad11a0d4697a27162840b02b1fad249c1683cbc510cd5bf1a471f2f8085c046d41094308c577a50a03a579dd99d5a6b3724c4b5e8b14df2c4443844cfcda2c6
   languageName: node
   linkType: hard
+
+"brickdex.frontend@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "brickdex.frontend@workspace:."
+  dependencies:
+    "@codecov/vite-plugin": "npm:^1.9.1"
+    "@stylistic/eslint-plugin-js": "npm:^4.4.1"
+    "@stylistic/stylelint-plugin": "npm:^4.0.0"
+    "@testing-library/dom": "npm:^10.4.1"
+    "@vitest/browser": "npm:^4.0.16"
+    "@vitest/coverage-v8": "npm:^4.0.16"
+    "@vitest/eslint-plugin": "npm:^1.5.1"
+    "@vitest/ui": "npm:^4.0.14"
+    autoprefixer: "npm:^10.4.22"
+    browserslist: "npm:^4.28.1"
+    cssnano: "npm:^7.1.2"
+    esbuild: "npm:^0.27.0"
+    esbuild-plugin-browserslist: "npm:^2.0.0"
+    eslint: "npm:^9.39.1"
+    eslint-plugin-compat: "npm:^6.0.2"
+    eslint-plugin-jsdoc: "npm:^61.4.1"
+    eslint-plugin-testing-library: "npm:^7.13.5"
+    jsdom: "npm:^27.4.0"
+    jsdom-testing-mocks: "npm:^1.16.0"
+    lit: "npm:^3.2.1"
+    postcss: "npm:^8.5.6"
+    postcss-scss: "npm:^4.0.9"
+    rollup-plugin-copy: "npm:^3.5.0"
+    rollup-plugin-visualizer: "npm:^6.0.5"
+    sass: "npm:^1.97.1"
+    stylelint: "npm:^16.26.1"
+    stylelint-config-standard: "npm:^39.0.1"
+    stylelint-config-standard-scss: "npm:^16.0.0"
+    typescript: "npm:^5.9.3"
+    undici: "npm:^7.16.0"
+    vite: "npm:^7.3.0"
+    vite-plugin-mkcert: "npm:^1.17.9"
+    vitest: "npm:^4.0.16"
+    webdriverio: "npm:^9.22.0"
+  languageName: unknown
+  linkType: soft
 
 "browserslist@npm:^4.0.0":
   version: 4.21.3
