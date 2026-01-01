@@ -1,35 +1,59 @@
 using BrickDex.Core.Contracts;
 using BrickDex.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BrickDex.Web.Pages.Sets;
 
+[Authorize]
 public class DetailsModel : PageModel {
     private readonly ILegoSetService _legoSetService;
+    private readonly IUserService _userService;
 
-    public DetailsModel(ILegoSetService legoSetService) {
+    public DetailsModel(ILegoSetService legoSetService, IUserService userService) {
         _legoSetService = legoSetService;
+        _userService = userService;
     }
 
     [BindProperty]
-    public LegoSet? Set { get; set; }
+    public UserSet? UserSet { get; set; }
 
-    public async Task OnGetAsync(Guid id, CancellationToken cancellationToken) {
-        Set = await _legoSetService.GetByIdAsync(id, cancellationToken);
-    }
+    public async Task<IActionResult> OnGetAsync(Guid id, CancellationToken cancellationToken) {
+        var user = await _userService.GetCurrentUserAsync(User, cancellationToken);
+        if(user == null) {
+            return Unauthorized();
+        }
 
-    public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken) {
-        if(Set == null) {
+        UserSet = await _legoSetService.GetUserSetAsync(user.Id, id, cancellationToken);
+        if(UserSet == null) {
             return NotFound();
         }
 
-        await _legoSetService.UpdateAsync(Set, cancellationToken);
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken) {
+        var user = await _userService.GetCurrentUserAsync(User, cancellationToken);
+        if(user == null) {
+            return Unauthorized();
+        }
+
+        if(UserSet == null) {
+            return NotFound();
+        }
+
+        await _legoSetService.UpdateUserSetAsync(UserSet, cancellationToken);
         return RedirectToPage("/Sets/Index");
     }
 
     public async Task<IActionResult> OnPostDeleteAsync(Guid id, CancellationToken cancellationToken) {
-        await _legoSetService.DeleteAsync(id, cancellationToken);
+        var user = await _userService.GetCurrentUserAsync(User, cancellationToken);
+        if(user == null) {
+            return Unauthorized();
+        }
+
+        await _legoSetService.RemoveFromUserCollectionAsync(user.Id, id, cancellationToken);
         return RedirectToPage("/Sets/Index");
     }
 }

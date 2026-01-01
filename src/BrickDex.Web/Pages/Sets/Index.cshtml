@@ -9,13 +9,44 @@
     <a asp-page="/Sets/Search" class="btn btn-primary">Add New Set</a>
 </div>
 
-@if(Model.Sets.Count == 0) {
-    <div class="empty-state">
-        <p>Your collection is empty. Start by adding some sets!</p>
-        <a asp-page="/Sets/Search" class="btn btn-primary">Search for Sets</a>
-    </div>
+<div class="search-form">
+    <form method="get">
+        <input type="hidden" name="currentPage" value="1" />
+        <input type="hidden" name="sortBy" value="@Model.SortBy" />
+        <input type="hidden" name="sortDesc" value="@Model.SortDesc" />
+        <input type="hidden" name="view" value="@Model.View" />
+        <div class="search-input-group">
+            <input type="text" name="query" value="@Model.Query" placeholder="Filter by name, set number, or theme..." class="form-control" />
+            <button type="submit" class="btn btn-primary">Filter</button>
+            @if(!string.IsNullOrEmpty(Model.Query)) {
+                <a asp-page="/Sets/Index" asp-route-view="@Model.View" class="btn btn-secondary">Clear</a>
+            }
+            <div class="view-toggle">
+                <a asp-page="/Sets/Index" asp-route-query="@Model.Query" asp-route-sortBy="@Model.SortBy" asp-route-sortDesc="@Model.SortDesc" asp-route-currentPage="@Model.CurrentPage" asp-route-view="list" class="view-toggle-btn @(Model.View == "list" ? "active" : "")" title="List view">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                </a>
+                <a asp-page="/Sets/Index" asp-route-query="@Model.Query" asp-route-sortBy="@Model.SortBy" asp-route-sortDesc="@Model.SortDesc" asp-route-currentPage="@Model.CurrentPage" asp-route-view="grid" class="view-toggle-btn @(Model.View == "grid" ? "active" : "")" title="Grid view">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if(Model.SetList == null || Model.SetList.Sets.Count == 0) {
+    @if(string.IsNullOrEmpty(Model.Query)) {
+        <div class="empty-state">
+            <p>Your collection is empty. Start by adding some sets!</p>
+            <a asp-page="/Sets/Search" class="btn btn-primary">Search for Sets</a>
+        </div>
+    } else {
+        <div class="empty-state">
+            <p>No sets found matching "@Model.Query"</p>
+            <a asp-page="/Sets/Index" class="btn btn-secondary">Clear Filter</a>
+        </div>
+    }
 } else {
-    <div class="sets-table-container">
-        <lego-sets-table sets="@System.Text.Json.JsonSerializer.Serialize(Model.Sets, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase })"></lego-sets-table>
+    <div class="collection-results">
+        @await Component.InvokeAsync("SetList", Model.SetList)
     </div>
 }

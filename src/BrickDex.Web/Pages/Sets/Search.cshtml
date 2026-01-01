@@ -10,10 +10,69 @@
 
 <div class="search-form">
     <form method="get">
+        <input type="hidden" name="currentPage" value="1" />
         <div class="search-input-group">
             <input type="text" name="query" value="@Model.Query" placeholder="Search by set number or name..." class="form-control" />
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
+
+        <details class="search-filters" @(Model.HasActiveFilters ? "open" : "")>
+            <summary class="filters-toggle">
+                Advanced Filters
+                @if(Model.HasActiveFilters) {
+                    <span class="active-filters-badge">Active</span>
+                }
+            </summary>
+            <div class="filters-panel">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>Year Range</label>
+                        <div class="filter-range">
+                            <input type="number" name="minYear" value="@Model.MinYear" placeholder="Min" min="1949" class="form-control" />
+                            <span class="range-separator">to</span>
+                            <input type="number" name="maxYear" value="@Model.MaxYear" placeholder="Max" min="1949" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Parts Range</label>
+                        <div class="filter-range">
+                            <input type="number" name="minParts" value="@Model.MinParts" placeholder="Min" min="0" class="form-control" />
+                            <span class="range-separator">to</span>
+                            <input type="number" name="maxParts" value="@Model.MaxParts" placeholder="Max" min="0" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="themeFilter">Theme</label>
+                        <select name="themeId" id="themeFilter" class="form-control">
+                            <option value="">All Themes</option>
+                            @foreach(var theme in Model.Themes) {
+                                <option value="@theme.Id" selected="@(Model.ThemeId == theme.Id)">@theme.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="orderingFilter">Sort By</label>
+                        <select name="ordering" id="orderingFilter" class="form-control">
+                            <option value="" selected="@(string.IsNullOrEmpty(Model.Ordering))">Relevance</option>
+                            <option value="year" selected="@(Model.Ordering == "year")">Year (Oldest First)</option>
+                            <option value="-year" selected="@(Model.Ordering == "-year")">Year (Newest First)</option>
+                            <option value="num_parts" selected="@(Model.Ordering == "num_parts")">Parts (Fewest First)</option>
+                            <option value="-num_parts" selected="@(Model.Ordering == "-num_parts")">Parts (Most First)</option>
+                            <option value="name" selected="@(Model.Ordering == "name")">Name (A-Z)</option>
+                            <option value="-name" selected="@(Model.Ordering == "-name")">Name (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="/Sets/Search" class="btn btn-secondary">Clear All</a>
+                </div>
+            </div>
+        </details>
     </form>
 </div>
 
@@ -23,10 +82,10 @@
     </div>
 }
 
-@if(!string.IsNullOrEmpty(Model.Query)) {
+@if(!string.IsNullOrEmpty(Model.Query) || Model.HasActiveFilters) {
     @if(Model.SearchResults.Count == 0) {
         <div class="empty-state">
-            <p>No sets found matching "@Model.Query"</p>
+            <p>No sets found matching your search criteria</p>
         </div>
     } else {
         <div class="search-results">
@@ -35,7 +94,15 @@
                 @foreach(var set in Model.SearchResults) {
                     <div class="set-card">
                         @if(!string.IsNullOrEmpty(set.SetImageUrl)) {
-                            <img src="@set.SetImageUrl" alt="@set.Name" class="set-image" loading="lazy" />
+                            <picture>
+                                <source media="(max-width: 480px)" srcset="@set.SetImageUrl.ToThumbnail(150, 150)">
+                                <source media="(max-width: 768px)" srcset="@set.SetImageUrl.ToThumbnail(200, 200)">
+                                <img src="@set.SetImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                            </picture>
+                        } else {
+                            <div class="set-image-placeholder">
+                                <span>No Image</span>
+                            </div>
                         }
                         <div class="set-info">
                             <h3>@set.Name</h3>
@@ -47,12 +114,24 @@
                                 <input type="hidden" name="setNumber" value="@set.SetNumber" />
                                 <input type="hidden" name="query" value="@Model.Query" />
                                 <input type="hidden" name="page" value="@Model.CurrentPage" />
+                                <input type="hidden" name="minYear" value="@Model.MinYear" />
+                                <input type="hidden" name="maxYear" value="@Model.MaxYear" />
+                                <input type="hidden" name="minParts" value="@Model.MinParts" />
+                                <input type="hidden" name="maxParts" value="@Model.MaxParts" />
+                                <input type="hidden" name="themeId" value="@Model.ThemeId" />
+                                <input type="hidden" name="ordering" value="@Model.Ordering" />
                                 <button type="submit" class="btn btn-primary">Add to Collection</button>
                             </form>
                             <form method="post" asp-page-handler="AddToWishlist" style="display: inline;">
                                 <input type="hidden" name="setNumber" value="@set.SetNumber" />
                                 <input type="hidden" name="query" value="@Model.Query" />
                                 <input type="hidden" name="page" value="@Model.CurrentPage" />
+                                <input type="hidden" name="minYear" value="@Model.MinYear" />
+                                <input type="hidden" name="maxYear" value="@Model.MaxYear" />
+                                <input type="hidden" name="minParts" value="@Model.MinParts" />
+                                <input type="hidden" name="maxParts" value="@Model.MaxParts" />
+                                <input type="hidden" name="themeId" value="@Model.ThemeId" />
+                                <input type="hidden" name="ordering" value="@Model.Ordering" />
                                 <button type="submit" class="btn btn-secondary">Add to Wishlist</button>
                             </form>
                         </div>
@@ -63,7 +142,16 @@
             @if(Model.TotalPages > 1) {
                 <nav class="pagination">
                     @if(Model.CurrentPage > 1) {
-                        <a asp-page="/Sets/Search" asp-route-query="@Model.Query" asp-route-currentPage="@(Model.CurrentPage - 1)" class="pagination-link pagination-prev">Previous</a>
+                        <a asp-page="/Sets/Search"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="@(Model.CurrentPage - 1)"
+                           asp-route-minYear="@Model.MinYear"
+                           asp-route-maxYear="@Model.MaxYear"
+                           asp-route-minParts="@Model.MinParts"
+                           asp-route-maxParts="@Model.MaxParts"
+                           asp-route-themeId="@Model.ThemeId"
+                           asp-route-ordering="@Model.Ordering"
+                           class="pagination-link pagination-prev">Previous</a>
                     } else {
                         <span class="pagination-link pagination-prev disabled">Previous</span>
                     }
@@ -74,7 +162,16 @@
                             var endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
 
                             if(startPage > 1) {
-                                <a asp-page="/Sets/Search" asp-route-query="@Model.Query" asp-route-currentPage="1" class="pagination-link">1</a>
+                                <a asp-page="/Sets/Search"
+                                   asp-route-query="@Model.Query"
+                                   asp-route-currentPage="1"
+                                   asp-route-minYear="@Model.MinYear"
+                                   asp-route-maxYear="@Model.MaxYear"
+                                   asp-route-minParts="@Model.MinParts"
+                                   asp-route-maxParts="@Model.MaxParts"
+                                   asp-route-themeId="@Model.ThemeId"
+                                   asp-route-ordering="@Model.Ordering"
+                                   class="pagination-link">1</a>
                                 if(startPage > 2) {
                                     <span class="pagination-ellipsis">...</span>
                                 }
@@ -84,7 +181,16 @@
                                 if(i == Model.CurrentPage) {
                                     <span class="pagination-link current">@i</span>
                                 } else {
-                                    <a asp-page="/Sets/Search" asp-route-query="@Model.Query" asp-route-currentPage="@i" class="pagination-link">@i</a>
+                                    <a asp-page="/Sets/Search"
+                                       asp-route-query="@Model.Query"
+                                       asp-route-currentPage="@i"
+                                       asp-route-minYear="@Model.MinYear"
+                                       asp-route-maxYear="@Model.MaxYear"
+                                       asp-route-minParts="@Model.MinParts"
+                                       asp-route-maxParts="@Model.MaxParts"
+                                       asp-route-themeId="@Model.ThemeId"
+                                       asp-route-ordering="@Model.Ordering"
+                                       class="pagination-link">@i</a>
                                 }
                             }
 
@@ -92,13 +198,31 @@
                                 if(endPage < Model.TotalPages - 1) {
                                     <span class="pagination-ellipsis">...</span>
                                 }
-                                <a asp-page="/Sets/Search" asp-route-query="@Model.Query" asp-route-currentPage="@Model.TotalPages" class="pagination-link">@Model.TotalPages</a>
+                                <a asp-page="/Sets/Search"
+                                   asp-route-query="@Model.Query"
+                                   asp-route-currentPage="@Model.TotalPages"
+                                   asp-route-minYear="@Model.MinYear"
+                                   asp-route-maxYear="@Model.MaxYear"
+                                   asp-route-minParts="@Model.MinParts"
+                                   asp-route-maxParts="@Model.MaxParts"
+                                   asp-route-themeId="@Model.ThemeId"
+                                   asp-route-ordering="@Model.Ordering"
+                                   class="pagination-link">@Model.TotalPages</a>
                             }
                         }
                     </div>
 
                     @if(Model.CurrentPage < Model.TotalPages) {
-                        <a asp-page="/Sets/Search" asp-route-query="@Model.Query" asp-route-currentPage="@(Model.CurrentPage + 1)" class="pagination-link pagination-next">Next</a>
+                        <a asp-page="/Sets/Search"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="@(Model.CurrentPage + 1)"
+                           asp-route-minYear="@Model.MinYear"
+                           asp-route-maxYear="@Model.MaxYear"
+                           asp-route-minParts="@Model.MinParts"
+                           asp-route-maxParts="@Model.MaxParts"
+                           asp-route-themeId="@Model.ThemeId"
+                           asp-route-ordering="@Model.Ordering"
+                           class="pagination-link pagination-next">Next</a>
                     } else {
                         <span class="pagination-link pagination-next disabled">Next</span>
                     }

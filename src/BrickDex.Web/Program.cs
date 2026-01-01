@@ -22,6 +22,9 @@ try {
 
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+    // Add authentication
+    builder.Services.AddBrickDexAuthentication(builder.Configuration);
+
     // Add services
     builder.Services.AddRebrickableClient(builder.Configuration);
     builder.Services.AddBrickDexServices();
@@ -53,6 +56,7 @@ try {
 
     app.UseRouting();
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.UseSerilogRequestLogging();

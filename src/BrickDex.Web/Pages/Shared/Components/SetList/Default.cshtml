@@ -1,0 +1,255 @@
+@model BrickDex.Web.ViewModels.SetListViewModel
+
+<p class="results-count">@Model.TotalCount sets (page @Model.CurrentPage of @Model.TotalPages)</p>
+
+@if(Model.View == "list") {
+    <div class="table-responsive">
+        <table class="sets-table">
+            <thead>
+                <tr>
+                    <th class="col-image"></th>
+                    <th class="col-name">
+                        <a asp-page="@Model.PageName"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="1"
+                           asp-route-sortBy="name"
+                           asp-route-sortDesc="@Model.GetNextSortDesc("name")"
+                           asp-route-view="@Model.View"
+                           class="sort-link">Name@(Model.GetSortIndicator("name"))</a>
+                    </th>
+                    <th class="col-setnumber">
+                        <a asp-page="@Model.PageName"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="1"
+                           asp-route-sortBy="setnumber"
+                           asp-route-sortDesc="@Model.GetNextSortDesc("setnumber")"
+                           asp-route-view="@Model.View"
+                           class="sort-link">Set #@(Model.GetSortIndicator("setnumber"))</a>
+                    </th>
+                    <th class="col-year">
+                        <a asp-page="@Model.PageName"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="1"
+                           asp-route-sortBy="year"
+                           asp-route-sortDesc="@Model.GetNextSortDesc("year")"
+                           asp-route-view="@Model.View"
+                           class="sort-link">Year@(Model.GetSortIndicator("year"))</a>
+                    </th>
+                    <th class="col-parts">
+                        <a asp-page="@Model.PageName"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="1"
+                           asp-route-sortBy="parts"
+                           asp-route-sortDesc="@Model.GetNextSortDesc("parts")"
+                           asp-route-view="@Model.View"
+                           class="sort-link">Parts@(Model.GetSortIndicator("parts"))</a>
+                    </th>
+                    <th class="col-theme">
+                        <a asp-page="@Model.PageName"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="1"
+                           asp-route-sortBy="theme"
+                           asp-route-sortDesc="@Model.GetNextSortDesc("theme")"
+                           asp-route-view="@Model.View"
+                           class="sort-link">Theme@(Model.GetSortIndicator("theme"))</a>
+                    </th>
+                    @if(Model.ShowActions) {
+                        <th class="col-actions"></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var set in Model.Sets) {
+                    <tr>
+                        <td class="col-image">
+                            @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                                <picture>
+                                    <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(60, 60)">
+                                    <img src="@set.ImageUrl.ToThumbnail(100, 100)" alt="@set.Name" class="set-thumbnail" loading="lazy" />
+                                </picture>
+                            } else {
+                                <div class="set-thumbnail-placeholder">
+                                    <span>No Image</span>
+                                </div>
+                            }
+                        </td>
+                        <td class="col-name">
+                            <a asp-page="/Sets/Details" asp-route-id="@set.LegoSetId">@set.Name</a>
+                        </td>
+                        <td class="col-setnumber">@set.SetNumber</td>
+                        <td class="col-year">@set.Year</td>
+                        <td class="col-parts">@set.NumParts</td>
+                        <td class="col-theme">@(set.ThemeName ?? "-")</td>
+                        @if(Model.ShowActions) {
+                            <td class="col-actions">
+                                <div class="table-actions">
+                                    <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.LegoSetId">
+                                        <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
+                                        <input type="hidden" name="query" value="@Model.Query" />
+                                        <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                                        <input type="hidden" name="sortDesc" value="@Model.SortDesc" />
+                                        <input type="hidden" name="view" value="@Model.View" />
+                                        <button type="submit" class="btn btn-sm btn-success">Move</button>
+                                    </form>
+                                    <form method="post" asp-page="@Model.PageName" asp-page-handler="Delete" asp-route-id="@set.Id" onsubmit="return confirm('Are you sure?')">
+                                        <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
+                                        <input type="hidden" name="query" value="@Model.Query" />
+                                        <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                                        <input type="hidden" name="sortDesc" value="@Model.SortDesc" />
+                                        <input type="hidden" name="view" value="@Model.View" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                    </form>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+} else {
+    <div class="sets-grid">
+        @foreach(var set in Model.Sets) {
+            @if(Model.ShowActions) {
+                <div class="set-card">
+                    <a asp-page="/Sets/Details" asp-route-id="@set.LegoSetId" class="set-card-link-area">
+                        @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                            <picture>
+                                <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
+                                <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
+                                <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                            </picture>
+                        } else {
+                            <div class="set-image-placeholder">
+                                <span>No Image</span>
+                            </div>
+                        }
+                        <div class="set-info">
+                            <h3>@set.Name</h3>
+                            <p class="set-number">@set.SetNumber</p>
+                            <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                            @if(!string.IsNullOrEmpty(set.ThemeName)) {
+                                <p class="set-theme">@set.ThemeName</p>
+                            }
+                        </div>
+                    </a>
+                    <div class="set-actions">
+                        <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.LegoSetId">
+                            <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
+                            <input type="hidden" name="query" value="@Model.Query" />
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                            <input type="hidden" name="sortDesc" value="@Model.SortDesc" />
+                            <input type="hidden" name="view" value="@Model.View" />
+                            <button type="submit" class="btn btn-sm btn-success">Move to Collection</button>
+                        </form>
+                        <form method="post" asp-page="@Model.PageName" asp-page-handler="Delete" asp-route-id="@set.Id" onsubmit="return confirm('Are you sure?')">
+                            <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
+                            <input type="hidden" name="query" value="@Model.Query" />
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                            <input type="hidden" name="sortDesc" value="@Model.SortDesc" />
+                            <input type="hidden" name="view" value="@Model.View" />
+                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            } else {
+                <a asp-page="/Sets/Details" asp-route-id="@set.LegoSetId" class="set-card set-card-link">
+                    @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                        <picture>
+                            <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
+                            <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
+                            <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                        </picture>
+                    } else {
+                        <div class="set-image-placeholder">
+                            <span>No Image</span>
+                        </div>
+                    }
+                    <div class="set-info">
+                        <h3>@set.Name</h3>
+                        <p class="set-number">@set.SetNumber</p>
+                        <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                        @if(!string.IsNullOrEmpty(set.ThemeName)) {
+                            <p class="set-theme">@set.ThemeName</p>
+                        }
+                    </div>
+                </a>
+            }
+        }
+    </div>
+}
+
+@if(Model.TotalPages > 1) {
+    <nav class="pagination">
+        @if(Model.CurrentPage > 1) {
+            <a asp-page="@Model.PageName"
+               asp-route-query="@Model.Query"
+               asp-route-currentPage="@(Model.CurrentPage - 1)"
+               asp-route-sortBy="@Model.SortBy"
+               asp-route-sortDesc="@Model.SortDesc"
+               asp-route-view="@Model.View"
+               class="pagination-link pagination-prev">Previous</a>
+        } else {
+            <span class="pagination-link pagination-prev disabled">Previous</span>
+        }
+
+        <div class="pagination-pages">
+            @{
+                var startPage = Math.Max(1, Model.CurrentPage - 2);
+                var endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
+
+                if(startPage > 1) {
+                    <a asp-page="@Model.PageName"
+                       asp-route-query="@Model.Query"
+                       asp-route-currentPage="1"
+                       asp-route-sortBy="@Model.SortBy"
+                       asp-route-sortDesc="@Model.SortDesc"
+                       asp-route-view="@Model.View"
+                       class="pagination-link">1</a>
+                    if(startPage > 2) {
+                        <span class="pagination-ellipsis">...</span>
+                    }
+                }
+
+                for(var i = startPage; i <= endPage; i++) {
+                    if(i == Model.CurrentPage) {
+                        <span class="pagination-link current">@i</span>
+                    } else {
+                        <a asp-page="@Model.PageName"
+                           asp-route-query="@Model.Query"
+                           asp-route-currentPage="@i"
+                           asp-route-sortBy="@Model.SortBy"
+                           asp-route-sortDesc="@Model.SortDesc"
+                           asp-route-view="@Model.View"
+                           class="pagination-link">@i</a>
+                    }
+                }
+
+                if(endPage < Model.TotalPages) {
+                    if(endPage < Model.TotalPages - 1) {
+                        <span class="pagination-ellipsis">...</span>
+                    }
+                    <a asp-page="@Model.PageName"
+                       asp-route-query="@Model.Query"
+                       asp-route-currentPage="@Model.TotalPages"
+                       asp-route-sortBy="@Model.SortBy"
+                       asp-route-sortDesc="@Model.SortDesc"
+                       asp-route-view="@Model.View"
+                       class="pagination-link">@Model.TotalPages</a>
+                }
+            }
+        </div>
+
+        @if(Model.CurrentPage < Model.TotalPages) {
+            <a asp-page="@Model.PageName"
+               asp-route-query="@Model.Query"
+               asp-route-currentPage="@(Model.CurrentPage + 1)"
+               asp-route-sortBy="@Model.SortBy"
+               asp-route-sortDesc="@Model.SortDesc"
+               asp-route-view="@Model.View"
+               class="pagination-link pagination-next">Next</a>
+        } else {
+            <span class="pagination-link pagination-next disabled">Next</span>
+        }
+    </nav>
+}
