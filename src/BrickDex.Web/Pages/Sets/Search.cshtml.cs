@@ -11,21 +11,15 @@ namespace BrickDex.Web.Pages.Sets;
 [Authorize]
 public class SearchModel : PageModel {
     private readonly IUserSetService _userSetService;
-    private readonly IUserService _userService;
     private readonly ILegoThemeCache _themeCache;
-    private readonly ILogger<SearchModel> _logger;
 
     private const int _pageSize = 20;
 
     public SearchModel(
         IUserSetService userSetService,
-        IUserService userService,
-        ILegoThemeCache themeCache,
-        ILogger<SearchModel> logger) {
+        ILegoThemeCache themeCache) {
         _userSetService = userSetService;
-        _userService = userService;
         _themeCache = themeCache;
-        _logger = logger;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -57,10 +51,6 @@ public class SearchModel : PageModel {
     public int TotalCount { get; set; }
     public int TotalPages => TotalCount > 0 ? (int)Math.Ceiling((double)TotalCount / _pageSize) : 0;
 
-    public string? Message { get; set; }
-    public bool IsError { get; set; }
-    public Guid? AddedSetId { get; set; }
-
     public bool HasActiveFilters =>
         MinYear.HasValue || MaxYear.HasValue ||
         MinParts.HasValue || MaxParts.HasValue ||
@@ -76,81 +66,6 @@ public class SearchModel : PageModel {
         if(!string.IsNullOrWhiteSpace(Query) || HasActiveFilters) {
             await ExecuteSearchAsync(cancellationToken);
         }
-    }
-
-    public async Task<IActionResult> OnPostAddToCollectionAsync(
-        string setNumber,
-        string? query,
-        int page,
-        int? minYear,
-        int? maxYear,
-        int? minParts,
-        int? maxParts,
-        int? themeId,
-        string? ordering,
-        CancellationToken cancellationToken) {
-        return await AddSetAsync(setNumber, query, page, minYear, maxYear, minParts, maxParts, themeId, ordering, isWishlist: false, cancellationToken);
-    }
-
-    public async Task<IActionResult> OnPostAddToWishlistAsync(
-        string setNumber,
-        string? query,
-        int page,
-        int? minYear,
-        int? maxYear,
-        int? minParts,
-        int? maxParts,
-        int? themeId,
-        string? ordering,
-        CancellationToken cancellationToken) {
-        return await AddSetAsync(setNumber, query, page, minYear, maxYear, minParts, maxParts, themeId, ordering, isWishlist: true, cancellationToken);
-    }
-
-    private async Task<IActionResult> AddSetAsync(
-        string setNumber,
-        string? query,
-        int page,
-        int? minYear,
-        int? maxYear,
-        int? minParts,
-        int? maxParts,
-        int? themeId,
-        string? ordering,
-        bool isWishlist,
-        CancellationToken cancellationToken) {
-        var user = await _userService.GetCurrentUserAsync(User, cancellationToken);
-        if(user == null) {
-            return Unauthorized();
-        }
-
-        // Restore filter state
-        Query = query;
-        CurrentPage = page < 1 ? 1 : page;
-        MinYear = minYear;
-        MaxYear = maxYear;
-        MinParts = minParts;
-        MaxParts = maxParts;
-        ThemeId = themeId;
-        Ordering = ordering;
-
-        try {
-            var userSet = await _userSetService.AddToUserCollectionAsync(user.Id, setNumber, isWishlist, cancellationToken);
-            AddedSetId = userSet.Id;
-            Message = $"Set {setNumber} added to {(isWishlist ? "wishlist" : "collection")}!";
-        } catch(InvalidOperationException ex) {
-            _logger.LogWarning(ex, "Failed to add set {SetNumber}", setNumber);
-            IsError = true;
-            Message = ex.Message;
-        }
-
-        await LoadThemesAsync(cancellationToken);
-
-        // Re-run the search to show results again
-        if(!string.IsNullOrWhiteSpace(Query) || HasActiveFilters) {
-            await ExecuteSearchAsync(cancellationToken);
-        }
-
-        return Page();
     }
 
     private async Task ExecuteSearchAsync(CancellationToken cancellationToken) {

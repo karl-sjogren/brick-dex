@@ -171,6 +171,50 @@ try {
             return Results.Ok(new { status = userSet.Status.ToString() });
         });
 
+    apiGroup.MapPost("/usersets/collection", async (
+        AddSetRequest request,
+        IUserSetService userSetService,
+        IUserService userService,
+        ClaimsPrincipal user,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken) => {
+            var currentUser = await userService.GetCurrentUserAsync(user, cancellationToken);
+            if(currentUser == null) {
+                return Results.Unauthorized();
+            }
+
+            try {
+                var userSet = await userSetService.AddToUserCollectionAsync(
+                    currentUser.Id, request.SetNumber, isWishlist: false, cancellationToken);
+                return Results.Ok(new AddSetResponse(userSet.Id, userSet.SetNumber, userSet.Set.Name));
+            } catch(InvalidOperationException ex) {
+                logger.LogWarning(ex, "Failed to add set {SetNumber} to collection", request.SetNumber);
+                return Results.BadRequest(new { error = ex.Message });
+            }
+        });
+
+    apiGroup.MapPost("/usersets/wishlist", async (
+        AddSetRequest request,
+        IUserSetService userSetService,
+        IUserService userService,
+        ClaimsPrincipal user,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken) => {
+            var currentUser = await userService.GetCurrentUserAsync(user, cancellationToken);
+            if(currentUser == null) {
+                return Results.Unauthorized();
+            }
+
+            try {
+                var userSet = await userSetService.AddToUserCollectionAsync(
+                    currentUser.Id, request.SetNumber, isWishlist: true, cancellationToken);
+                return Results.Ok(new AddSetResponse(userSet.Id, userSet.SetNumber, userSet.Set.Name));
+            } catch(InvalidOperationException ex) {
+                logger.LogWarning(ex, "Failed to add set {SetNumber} to wishlist", request.SetNumber);
+                return Results.BadRequest(new { error = ex.Message });
+            }
+        });
+
     await app.RunAsync();
 } catch(Exception ex) {
     Log.Fatal(ex, "Application terminated unexpectedly");
@@ -179,3 +223,5 @@ try {
 }
 
 internal record UpdateStatusRequest(SetStatus Status);
+internal record AddSetRequest(string SetNumber);
+internal record AddSetResponse(Guid Id, string SetNumber, string Name);

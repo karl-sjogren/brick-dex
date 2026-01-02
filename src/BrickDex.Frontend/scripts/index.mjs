@@ -1,6 +1,94 @@
 import '../styles/main.scss';
 import './elements/init.mjs';
 
+// Toast notification system
+const TOAST_DURATION = 4000;
+
+function getOrCreateToastContainer() {
+  let container = document.querySelector('.toast-container');
+  if(!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function showToast(message, type = 'success', link = null, setNumber = null) {
+  const container = getOrCreateToastContainer();
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+
+  const icon = type === 'success' ? '✓' : '✕';
+
+  let linkHtml = '';
+  if(link) {
+    linkHtml = `<a href="${link.url}" class="toast-link">${link.text} →</a>`;
+  }
+
+  let setNumberHtml = '';
+  if(setNumber) {
+    setNumberHtml = `<span class="toast-set-number">${setNumber}</span>`;
+  }
+
+  toast.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div class="toast-content">
+      <p class="toast-message">${setNumberHtml}${message}</p>
+      ${linkHtml}
+    </div>
+    <button type="button" class="toast-close" aria-label="Close">×</button>
+    <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+  `;
+
+  container.appendChild(toast);
+
+  // Start progress bar animation
+  const progressBar = toast.querySelector('.toast-progress-bar');
+  progressBar.style.animationDuration = `${TOAST_DURATION}ms`;
+
+  // Track remaining time for hover pause
+  let timeRemaining = TOAST_DURATION;
+  let startTime = Date.now();
+  let timeoutId = null;
+
+  const startTimer = () => {
+    startTime = Date.now();
+    progressBar.style.animationPlayState = 'running';
+    timeoutId = setTimeout(() => dismissToast(toast), timeRemaining);
+  };
+
+  const pauseTimer = () => {
+    if(timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    timeRemaining -= Date.now() - startTime;
+    progressBar.style.animationPlayState = 'paused';
+  };
+
+  // Pause on hover
+  toast.addEventListener('mouseenter', pauseTimer);
+  toast.addEventListener('mouseleave', startTimer);
+
+  // Close button handler
+  const closeBtn = toast.querySelector('.toast-close');
+  closeBtn.addEventListener('click', () => {
+    if(timeoutId) clearTimeout(timeoutId);
+    dismissToast(toast);
+  });
+
+  // Start auto dismiss timer
+  startTimer();
+}
+
+function dismissToast(toast) {
+  if(toast.classList.contains('toast-hiding')) return;
+  toast.classList.add('toast-hiding');
+  toast.addEventListener('animationend', () => toast.remove());
+}
+
 // Hamburger menu toggle
 const navbarToggler = document.querySelector('.navbar-toggler');
 const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -156,4 +244,78 @@ document.addEventListener('click', (e) => {
       parentRow.classList.remove('has-open-dropdown');
     }
   });
+});
+
+// Add to collection/wishlist functionality
+async function addSet(setNumber, isWishlist) {
+  const endpoint = isWishlist ? '/api/usersets/wishlist' : '/api/usersets/collection';
+  const targetName = isWishlist ? 'wishlist' : 'collection';
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ setNumber })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok) {
+      // Don't show set number badge for API errors since the message already includes it
+      showToast(data.error || `Failed to add set to ${targetName}`, 'error');
+      return null;
+    }
+
+    showToast(`${data.name} added to ${targetName}!`, 'success', {
+      url: `/Sets/Details/${data.id}`,
+      text: 'View set'
+    }, setNumber);
+
+    return data;
+  } catch(error) {
+    showToast(`Failed to add set to ${targetName}. Please try again.`, 'error', null, setNumber);
+    return null;
+  }
+}
+
+document.addEventListener('click', async (e) => {
+  const addCollectionBtn = e.target.closest('.btn-add-collection');
+  if(addCollectionBtn) {
+    e.preventDefault();
+    const setNumber = addCollectionBtn.dataset.setNumber;
+    addCollectionBtn.disabled = true;
+    addCollectionBtn.textContent = 'Adding...';
+
+    const result = await addSet(setNumber, false);
+    if(result) {
+      addCollectionBtn.textContent = 'Added!';
+      addCollectionBtn.classList.remove('btn-primary');
+      addCollectionBtn.classList.add('btn-success');
+    } else {
+      addCollectionBtn.disabled = false;
+      addCollectionBtn.textContent = 'Add to Collection';
+    }
+    return;
+  }
+
+  const addWishlistBtn = e.target.closest('.btn-add-wishlist');
+  if(addWishlistBtn) {
+    e.preventDefault();
+    const setNumber = addWishlistBtn.dataset.setNumber;
+    addWishlistBtn.disabled = true;
+    addWishlistBtn.textContent = 'Adding...';
+
+    const result = await addSet(setNumber, true);
+    if(result) {
+      addWishlistBtn.textContent = 'Added!';
+      addWishlistBtn.classList.remove('btn-secondary');
+      addWishlistBtn.classList.add('btn-success');
+    } else {
+      addWishlistBtn.disabled = false;
+      addWishlistBtn.textContent = 'Add to Wishlist';
+    }
+    return;
+  }
 });

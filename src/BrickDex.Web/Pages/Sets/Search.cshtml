@@ -76,15 +76,6 @@
     </form>
 </div>
 
-@if(!string.IsNullOrEmpty(Model.Message)) {
-    <div class="alert @(Model.IsError ? "alert-error" : "alert-success")">
-        @Model.Message
-        @if(Model.AddedSetId.HasValue) {
-            <a asp-page="/Sets/Details" asp-route-id="@Model.AddedSetId">View set</a>
-        }
-    </div>
-}
-
 @if(!string.IsNullOrEmpty(Model.Query) || Model.HasActiveFilters) {
     @if(Model.SearchResults.Count == 0) {
         <div class="empty-state">
@@ -113,30 +104,8 @@
                             <p class="set-details">@set.Year &bull; @set.NumParts.ToString("N0") parts</p>
                         </div>
                         <div class="set-actions">
-                            <form method="post" asp-page-handler="AddToCollection" style="display: inline;">
-                                <input type="hidden" name="setNumber" value="@set.SetNum" />
-                                <input type="hidden" name="query" value="@Model.Query" />
-                                <input type="hidden" name="page" value="@Model.CurrentPage" />
-                                <input type="hidden" name="minYear" value="@Model.MinYear" />
-                                <input type="hidden" name="maxYear" value="@Model.MaxYear" />
-                                <input type="hidden" name="minParts" value="@Model.MinParts" />
-                                <input type="hidden" name="maxParts" value="@Model.MaxParts" />
-                                <input type="hidden" name="themeId" value="@Model.ThemeId" />
-                                <input type="hidden" name="ordering" value="@Model.Ordering" />
-                                <button type="submit" class="btn btn-primary">Add to Collection</button>
-                            </form>
-                            <form method="post" asp-page-handler="AddToWishlist" style="display: inline;">
-                                <input type="hidden" name="setNumber" value="@set.SetNum" />
-                                <input type="hidden" name="query" value="@Model.Query" />
-                                <input type="hidden" name="page" value="@Model.CurrentPage" />
-                                <input type="hidden" name="minYear" value="@Model.MinYear" />
-                                <input type="hidden" name="maxYear" value="@Model.MaxYear" />
-                                <input type="hidden" name="minParts" value="@Model.MinParts" />
-                                <input type="hidden" name="maxParts" value="@Model.MaxParts" />
-                                <input type="hidden" name="themeId" value="@Model.ThemeId" />
-                                <input type="hidden" name="ordering" value="@Model.Ordering" />
-                                <button type="submit" class="btn btn-secondary">Add to Wishlist</button>
-                            </form>
+                            <button type="button" class="btn btn-primary btn-add-collection" data-set-number="@set.SetNum">Add to Collection</button>
+                            <button type="button" class="btn btn-secondary btn-add-wishlist" data-set-number="@set.SetNum">Add to Wishlist</button>
                         </div>
                     </div>
                 }
