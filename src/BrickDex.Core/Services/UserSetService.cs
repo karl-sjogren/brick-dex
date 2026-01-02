@@ -12,84 +12,47 @@ public class UserSetService : IUserSetService {
     private readonly IBrickDexContext _context;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<UserSetService> _logger;
+    private readonly ISearchService _searchService;
+    private readonly ISearchIndex _searchIndex;
 
     public UserSetService(
         IBrickDexContext context,
         TimeProvider timeProvider,
-        ILogger<UserSetService> logger) {
+        ILogger<UserSetService> logger,
+        ISearchService searchService,
+        ISearchIndex searchIndex) {
         _context = context;
         _timeProvider = timeProvider;
         _logger = logger;
+        _searchService = searchService;
+        _searchIndex = searchIndex;
     }
 
     // Search operations
 
     public async Task<PagedResult<RebrickableSetEntity>> SearchSetsAsync(SetSearchFilters filters, CancellationToken cancellationToken = default) {
-        var query = _context.RebrickableSets
+        // Use Lucene search
+        var searchResult = await _searchService.SearchSetsAsync(filters, cancellationToken);
+
+        if(searchResult.Items.Count == 0) {
+            return new PagedResult<RebrickableSetEntity>([], searchResult.TotalCount, searchResult.Page, searchResult.PageSize);
+        }
+
+        // Load full entities from database by SetNum, preserving search order
+        var setNums = searchResult.Items.Select(h => h.SetNum).ToList();
+        var sets = await _context.RebrickableSets
             .AsNoTracking()
             .Include(s => s.Theme)
-            .AsQueryable();
+            .Where(s => setNums.Contains(s.SetNum))
+            .ToDictionaryAsync(s => s.SetNum, cancellationToken);
 
-        // Text filter
-        if(!string.IsNullOrWhiteSpace(filters.Query)) {
-#pragma warning disable CA1304 // ToLower is intentional for EF Core SQL translation
-            var q = filters.Query.ToLower();
-            query = query.Where(s =>
-                s.Name.ToLower().Contains(q) ||
-                s.SetNum.ToLower().Contains(q));
-#pragma warning restore CA1304
-        }
+        // Preserve search result order
+        var orderedSets = setNums
+            .Where(sn => sets.ContainsKey(sn))
+            .Select(sn => sets[sn])
+            .ToList();
 
-        // Year filter
-        if(filters.MinYear.HasValue) {
-            query = query.Where(s => s.Year >= filters.MinYear.Value);
-        }
-
-        if(filters.MaxYear.HasValue) {
-            query = query.Where(s => s.Year <= filters.MaxYear.Value);
-        }
-
-        // Parts filter
-        if(filters.MinParts.HasValue) {
-            query = query.Where(s => s.NumParts >= filters.MinParts.Value);
-        }
-
-        if(filters.MaxParts.HasValue) {
-            query = query.Where(s => s.NumParts <= filters.MaxParts.Value);
-        }
-
-        // Theme filter
-        if(filters.ThemeId.HasValue) {
-            query = query.Where(s => s.ThemeId == filters.ThemeId.Value);
-        }
-
-        // Sorting - parse Ordering field
-        var (sortBy, sortDescending) = ParseOrdering(filters.Ordering);
-        query = sortBy?.ToLowerInvariant() switch {
-            "year" => sortDescending
-                ? query.OrderByDescending(s => s.Year)
-                : query.OrderBy(s => s.Year),
-            "num_parts" => sortDescending
-                ? query.OrderByDescending(s => s.NumParts)
-                : query.OrderBy(s => s.NumParts),
-            "name" => sortDescending
-                ? query.OrderByDescending(s => s.Name)
-                : query.OrderBy(s => s.Name),
-            "set_num" => sortDescending
-                ? query.OrderByDescending(s => s.SetNum)
-                : query.OrderBy(s => s.SetNum),
-            _ => sortDescending
-                ? query.OrderByDescending(s => s.Name)
-                : query.OrderBy(s => s.Name)
-        };
-
-        var totalCount = await query.CountAsync(cancellationToken);
-        var items = await query
-            .Skip((filters.Page - 1) * filters.PageSize)
-            .Take(filters.PageSize)
-            .ToListAsync(cancellationToken);
-
-        return new PagedResult<RebrickableSetEntity>(items, totalCount, filters.Page, filters.PageSize);
+        return new PagedResult<RebrickableSetEntity>(orderedSets, searchResult.TotalCount, searchResult.Page, searchResult.PageSize);
     }
 
     public async Task<RebrickableSetEntity?> GetSetBySetNumberAsync(string setNumber, CancellationToken cancellationToken = default) {
@@ -229,6 +192,9 @@ public class UserSetService : IUserSetService {
         _context.UserSets.Add(userSet);
         await _context.SaveChangesAsync(cancellationToken);
 
+        // Update search index
+        await _searchIndex.IndexUserSetAsync(userId, normalizedSetNumber, cancellationToken);
+
         // Load the Set for the returned object
         userSet.Set = rebrickableSet;
 
@@ -254,6 +220,9 @@ public class UserSetService : IUserSetService {
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        // Update search index
+        await _searchIndex.IndexUserSetAsync(existingUserSet.UserId, existingUserSet.SetNumber, cancellationToken);
+
         _logger.LogInformation("Updated UserSet {UserSetId}", existingUserSet.Id);
         return existingUserSet;
     }
@@ -266,8 +235,13 @@ public class UserSetService : IUserSetService {
             throw new InvalidOperationException($"UserSet with ID {userSetId} not found for user {userId}");
         }
 
+        var setNumber = userSet.SetNumber;
+
         _context.UserSets.Remove(userSet);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Update search index
+        await _searchIndex.RemoveUserSetAsync(userId, setNumber, cancellationToken);
 
         _logger.LogInformation("Removed UserSet {UserSetId} from user {UserId}", userSetId, userId);
     }
@@ -280,16 +254,5 @@ public class UserSetService : IUserSetService {
         }
 
         return setNumber;
-    }
-
-    private static (string? sortBy, bool sortDescending) ParseOrdering(string? ordering) {
-        if(string.IsNullOrWhiteSpace(ordering)) {
-            return (null, false);
-        }
-
-        var descending = ordering.StartsWith('-');
-        var field = descending ? ordering[1..] : ordering;
-
-        return (field, descending);
     }
 }

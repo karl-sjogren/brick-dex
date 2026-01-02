@@ -29,6 +29,7 @@ public class IndexModel : PageModel {
     public bool IsAuthenticated { get; set; }
     public int TotalSets { get; set; }
     public int TotalParts { get; set; }
+    public int TotalMinifigs { get; set; }
     public int WishlistCount { get; set; }
     public IReadOnlyList<UserSet> RecentSets { get; set; } = [];
     public bool GoogleEnabled { get; set; }
@@ -57,6 +58,20 @@ public class IndexModel : PageModel {
             .Include(us => us.Set)
             .Where(us => us.UserId == user.Id && !us.IsWishlist)
             .SumAsync(us => us.Set.NumParts * us.Quantity, cancellationToken);
+
+        TotalMinifigs = await _context.UserSets
+            .Where(us => us.UserId == user.Id && !us.IsWishlist)
+            .Join(
+                _context.RebrickableInventories,
+                us => us.SetNumber,
+                inv => inv.SetNum,
+                (us, inv) => new { us.Quantity, inv.Id })
+            .Join(
+                _context.RebrickableInventoryMinifigs,
+                x => x.Id,
+                im => im.InventoryId,
+                (x, im) => x.Quantity * im.Quantity)
+            .SumAsync(cancellationToken);
 
         WishlistCount = await _context.UserSets
             .Where(us => us.UserId == user.Id && us.IsWishlist)

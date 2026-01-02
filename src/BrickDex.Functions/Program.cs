@@ -3,6 +3,7 @@ using Azure.Identity;
 using BrickDex.Core.Contracts;
 using BrickDex.Core.Data;
 using BrickDex.Core.Services;
+using BrickDex.Lucene.Extensions;
 using BrickDex.Web.Data;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -31,6 +32,9 @@ builder.AddSqlServerDbContext<BrickDexContext>("brickdex");
 builder.Services.AddScoped<IBrickDexContext>(provider => provider.GetRequiredService<BrickDexContext>());
 builder.Services.AddHttpClient<IRebrickableCatalogImportService, RebrickableCatalogImportService>();
 builder.Services.AddSingleton(TimeProvider.System);
+
+// Add Lucene search services
+builder.Services.AddLuceneSearch(builder.Configuration);
 
 builder.Services
     .AddApplicationInsightsTelemetryWorkerService()

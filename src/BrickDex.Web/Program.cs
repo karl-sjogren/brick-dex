@@ -43,7 +43,7 @@ try {
 
     // Add services
     builder.Services.AddRebrickableClient(builder.Configuration);
-    builder.Services.AddBrickDexServices();
+    builder.Services.AddBrickDexServices(builder.Configuration);
 
     // Add Vite integration
     builder.Services.AddVite(options => {
@@ -104,6 +104,28 @@ try {
                 }
 
                 return Results.Ok(new { message = $"Rebrickable {entity} import completed successfully" });
+            });
+
+        // Search index management endpoints
+        devGroup.MapPost("/rebuild-search-index", async (
+            ISearchIndex searchIndex,
+            CancellationToken cancellationToken) => {
+                await searchIndex.RebuildIndexAsync(cancellationToken);
+                return Results.Ok(new { message = "Search index rebuilt successfully" });
+            });
+
+        devGroup.MapGet("/search-index-stats", async (
+            ISearchIndex searchIndex,
+            CancellationToken cancellationToken) => {
+                var stats = await searchIndex.GetStatsAsync(cancellationToken);
+                return Results.Ok(stats);
+            });
+
+        devGroup.MapPost("/optimize-search-index", async (
+            ISearchIndex searchIndex,
+            CancellationToken cancellationToken) => {
+                await searchIndex.OptimizeAsync(cancellationToken);
+                return Results.Ok(new { message = "Search index optimized successfully" });
             });
     } else {
         app.UseExceptionHandler("/Error");

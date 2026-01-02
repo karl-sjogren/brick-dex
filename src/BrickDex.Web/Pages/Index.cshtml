@@ -19,15 +19,19 @@
 @if(Model.IsAuthenticated) {
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-value">@Model.TotalSets</div>
+            <div class="stat-value">@Model.TotalSets.ToString("N0")</div>
             <div class="stat-label">Sets in Collection</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">@Model.TotalParts</div>
+            <div class="stat-value">@Model.TotalParts.ToString("N0")</div>
             <div class="stat-label">Total Parts</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">@Model.WishlistCount</div>
+            <div class="stat-value">@Model.TotalMinifigs.ToString("N0")</div>
+            <div class="stat-label">Total Minifigs</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@Model.WishlistCount.ToString("N0")</div>
             <div class="stat-label">On Wishlist</div>
         </div>
     </div>
@@ -65,7 +69,7 @@
                             <div class="set-info">
                                 <h3>@userSet.Set.Name</h3>
                                 <p class="set-number">@userSet.SetNumber</p>
-                                <p class="set-details">@userSet.Set.Year &bull; @userSet.Set.NumParts parts</p>
+                                <p class="set-details">@userSet.Set.Year &bull; @userSet.Set.NumParts.ToString("N0") parts</p>
                                 @if(userSet.Set.Theme != null) {
                                     <p class="set-theme">@userSet.Set.Theme.Name</p>
                                 }

@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BrickDex.Core\BrickDex.Core.csproj" />
+    <ProjectReference Include="..\BrickDex.Lucene\BrickDex.Lucene.csproj" />
     <ProjectReference Include="..\BrickDex.ServiceDefaults\BrickDex.ServiceDefaults.csproj" />
   </ItemGroup>
 

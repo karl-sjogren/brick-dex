@@ -92,7 +92,7 @@
         </div>
     } else {
         <div class="search-results">
-            <p class="results-count">Found @Model.TotalCount sets (page @Model.CurrentPage of @Model.TotalPages)</p>
+            <p class="results-count">Found @Model.TotalCount.ToString("N0") sets (page @Model.CurrentPage of @Model.TotalPages)</p>
             <div class="sets-grid">
                 @foreach(var set in Model.SearchResults) {
                     <div class="set-card">
@@ -110,7 +110,7 @@
                         <div class="set-info">
                             <h3>@set.Name</h3>
                             <p class="set-number">@set.SetNum</p>
-                            <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                            <p class="set-details">@set.Year &bull; @set.NumParts.ToString("N0") parts</p>
                         </div>
                         <div class="set-actions">
                             <form method="post" asp-page-handler="AddToCollection" style="display: inline;">

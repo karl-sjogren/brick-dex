@@ -16,14 +16,17 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
     private readonly IBrickDexContext _context;
     private readonly HttpClient _httpClient;
     private readonly ILogger<RebrickableCatalogImportService> _logger;
+    private readonly ISearchIndex _searchIndex;
 
     public RebrickableCatalogImportService(
         IBrickDexContext context,
         HttpClient httpClient,
-        ILogger<RebrickableCatalogImportService> logger) {
+        ILogger<RebrickableCatalogImportService> logger,
+        ISearchIndex searchIndex) {
         _context = context;
         _httpClient = httpClient;
         _logger = logger;
+        _searchIndex = searchIndex;
     }
 
     public async Task ImportAllAsync(CancellationToken cancellationToken = default) {
@@ -34,6 +37,11 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
         await ImportInventoriesAsync(cancellationToken);
         await ImportInventorySetsAsync(cancellationToken);
         await ImportInventoryMinifigsAsync(cancellationToken);
+
+        // Rebuild search index after import
+        _logger.LogInformation("Rebuilding search index after catalog import...");
+        await _searchIndex.RebuildIndexAsync(cancellationToken);
+        _logger.LogInformation("Search index rebuild complete");
     }
 
     public async Task ImportThemesAsync(CancellationToken cancellationToken = default) {

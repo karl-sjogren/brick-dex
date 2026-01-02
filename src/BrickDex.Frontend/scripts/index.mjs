@@ -76,14 +76,24 @@ document.addEventListener('click', (e) => {
     e.stopPropagation();
     const dropdown = toggle.closest('.status-dropdown');
 
-    // Close other open dropdowns
+    // Close other open dropdowns and remove their row highlights
     document.querySelectorAll('.status-dropdown.open').forEach((d) => {
       if(d !== dropdown) {
         d.classList.remove('open');
+        const parentRow = d.closest('tr, .set-card');
+        if(parentRow) {
+          parentRow.classList.remove('has-open-dropdown');
+        }
       }
     });
 
     dropdown.classList.toggle('open');
+
+    // Add/remove class on parent row for z-index stacking
+    const parentRow = dropdown.closest('tr, .set-card');
+    if(parentRow) {
+      parentRow.classList.toggle('has-open-dropdown', dropdown.classList.contains('open'));
+    }
     return;
   }
 
@@ -100,12 +110,20 @@ document.addEventListener('click', (e) => {
     // Don't do anything if selecting the same status
     if(newStatus === currentStatus) {
       dropdown.classList.remove('open');
+      const parentRow = dropdown.closest('tr, .set-card');
+      if(parentRow) {
+        parentRow.classList.remove('has-open-dropdown');
+      }
       return;
     }
 
     // Optimistically update UI
     updateStatusDisplay(dropdown, newStatus);
     dropdown.classList.remove('open');
+    const parentRow = dropdown.closest('tr, .set-card');
+    if(parentRow) {
+      parentRow.classList.remove('has-open-dropdown');
+    }
 
     // Send API request
     fetch(`/api/usersets/${userSetId}/status`, {
@@ -133,5 +151,9 @@ document.addEventListener('click', (e) => {
   // Close all dropdowns when clicking outside
   document.querySelectorAll('.status-dropdown.open').forEach((d) => {
     d.classList.remove('open');
+    const parentRow = d.closest('tr, .set-card');
+    if(parentRow) {
+      parentRow.classList.remove('has-open-dropdown');
+    }
   });
 });

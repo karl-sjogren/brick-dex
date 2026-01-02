@@ -28,7 +28,8 @@ public class RebrickableCatalogImportServiceTests : IDisposable {
         };
 
         var logger = new NullLogger<RebrickableCatalogImportService>();
-        _sut = new RebrickableCatalogImportService(_context, httpClient, logger);
+        var searchIndex = A.Fake<ISearchIndex>();
+        _sut = new RebrickableCatalogImportService(_context, httpClient, logger, searchIndex);
     }
 
     public void Dispose() {

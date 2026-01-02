@@ -2,6 +2,7 @@ using BrickDex.Core.Contracts;
 using BrickDex.Core.Data;
 using BrickDex.Core.Options;
 using BrickDex.Core.Services;
+using BrickDex.Lucene.Extensions;
 using BrickDex.Web.Data;
 using BrickDex.Web.Options;
 using BrickDex.Web.Services;
@@ -26,7 +27,7 @@ public static class ServiceCollectionExtensions {
         return services;
     }
 
-    public static IServiceCollection AddBrickDexServices(this IServiceCollection services) {
+    public static IServiceCollection AddBrickDexServices(this IServiceCollection services, IConfiguration configuration) {
         services.AddScoped<IBrickDexContext>(provider => provider.GetRequiredService<BrickDexContext>());
         services.AddScoped<IUserSetService, UserSetService>();
         services.AddScoped<IUserService, UserService>();
@@ -36,6 +37,9 @@ public static class ServiceCollectionExtensions {
         services.AddSingleton<IViewPreferenceService, ViewPreferenceService>();
         services.AddHttpClient<IRebrickableCatalogImportService, RebrickableCatalogImportService>();
         services.AddHostedService<MigrationHostedService>();
+
+        // Add Lucene search services
+        services.AddLuceneSearch(configuration);
 
         return services;
     }

@@ -59,10 +59,16 @@ body {
 }
 
 .navbar-brand {
+  display: flex;
+  align-items: center;
   color: $white;
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
+
+  img {
+    display: block;
+  }
 
   &:hover {
     color: $secondary-color;
@@ -284,6 +290,10 @@ h3 {
     box-shadow: 0 4px 12px rgb(0, 0, 0, 0.15);
   }
 
+  &.has-open-dropdown {
+    z-index: 100;
+  }
+
   .set-card-link-area,
   .set-image-wrapper {
     overflow: hidden;
@@ -362,25 +372,30 @@ $status-sold: #6f42c1;       // Purple
 }
 
 .set-card .status-dropdown {
-  position: relative;
-  padding: 0.5rem 1rem;
-  border-top: 1px solid $border-color;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+
+  &.open {
+    z-index: 100;
+  }
 
   .status-badge {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    width: 100%;
     cursor: pointer;
     border: none;
     color: $white;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    padding: 0.375rem 0.5rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 4px;
     text-transform: uppercase;
     background-color: #6c757d;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 
     &.status-ordered {
       background-color: $status-ordered;
@@ -417,8 +432,8 @@ $status-sold: #6f42c1;       // Purple
     display: none;
     position: absolute;
     top: calc(100% + 4px);
-    left: 0;
     right: 0;
+    min-width: 120px;
     background: $white;
     border: 1px solid $border-color;
     border-radius: 4px;
@@ -429,13 +444,14 @@ $status-sold: #6f42c1;       // Purple
     .status-option {
       display: block;
       width: 100%;
-      padding: 8px 12px;
+      padding: 6px 10px;
       text-align: left;
       border: none;
       background: none;
       cursor: pointer;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       color: $text-color;
+      white-space: nowrap;
 
       &:hover {
         background: $background-color;
@@ -800,8 +816,16 @@ a.set-card-link {
     }
   }
 
-  tbody tr:hover {
-    background-color: rgb(227, 0, 11, 0.05);
+  tbody tr {
+    position: relative;
+
+    &:hover {
+      background-color: rgb(227, 0, 11, 0.05);
+    }
+
+    &.has-open-dropdown {
+      z-index: 100;
+    }
   }
 
   .image-cell {

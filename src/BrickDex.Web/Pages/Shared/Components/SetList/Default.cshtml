@@ -9,7 +9,7 @@
     };
 }
 
-<p class="results-count">@Model.TotalCount sets (page @Model.CurrentPage of @Model.TotalPages)</p>
+<p class="results-count">@Model.TotalCount.ToString("N0") sets (page @Model.CurrentPage of @Model.TotalPages)</p>
 
 @if(Model.View == "list") {
     <div class="table-responsive">
@@ -109,7 +109,7 @@
                         </td>
                         <td class="col-setnumber">@set.SetNumber</td>
                         <td class="col-year">@set.Year</td>
-                        <td class="col-parts">@set.NumParts</td>
+                        <td class="col-parts">@set.NumParts.ToString("N0")</td>
                         <td class="col-theme">@(set.ThemeName ?? "-")</td>
                         @if(Model.ShowActions) {
                             <td class="col-actions">
@@ -144,46 +144,46 @@
             var statusClass = set.Status != SetStatus.None ? $"has-status status-{set.Status.ToString().ToLowerInvariant()}" : "";
             @if(Model.ShowActions) {
                 <div class="set-card @statusClass">
-                    <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card-link-area">
-                        <div class="set-image-wrapper">
-                            @if(!string.IsNullOrEmpty(set.ImageUrl)) {
-                                <picture>
-                                    <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
-                                    <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
-                                    <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
-                                </picture>
-                            } else {
-                                <div class="set-image-placeholder">
-                                    <span>No Image</span>
+                    <div class="set-image-wrapper">
+                        @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                            <picture>
+                                <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
+                                <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
+                                <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                            </picture>
+                        } else {
+                            <div class="set-image-placeholder">
+                                <span>No Image</span>
+                            </div>
+                        }
+                        @if(Model.ShowStatusDropdown) {
+                            <div class="status-dropdown" data-user-set-id="@set.Id" data-current-status="@((int)set.Status)">
+                                <button type="button" class="status-badge status-@set.Status.ToString().ToLowerInvariant()">
+                                    @GetStatusDisplayName(set.Status)
+                                    <span class="dropdown-arrow">▼</span>
+                                </button>
+                                <div class="status-dropdown-menu">
+                                    @foreach(var status in Enum.GetValues<SetStatus>()) {
+                                        <button type="button"
+                                                class="status-option status-@status.ToString().ToLowerInvariant() @(status == set.Status ? "selected" : "")"
+                                                data-status="@((int)status)">
+                                            @GetStatusDisplayName(status)
+                                        </button>
+                                    }
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
+                    </div>
+                    <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card-link-area">
                         <div class="set-info">
                             <h3>@set.Name</h3>
                             <p class="set-number">@set.SetNumber</p>
-                            <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                            <p class="set-details">@set.Year &bull; @set.NumParts.ToString("N0") parts</p>
                             @if(!string.IsNullOrEmpty(set.ThemeName)) {
                                 <p class="set-theme">@set.ThemeName</p>
                             }
                         </div>
                     </a>
-                    @if(Model.ShowStatusDropdown) {
-                        <div class="status-dropdown" data-user-set-id="@set.Id" data-current-status="@((int)set.Status)">
-                            <button type="button" class="status-badge status-@set.Status.ToString().ToLowerInvariant()">
-                                @GetStatusDisplayName(set.Status)
-                                <span class="dropdown-arrow">▼</span>
-                            </button>
-                            <div class="status-dropdown-menu">
-                                @foreach(var status in Enum.GetValues<SetStatus>()) {
-                                    <button type="button"
-                                            class="status-option status-@status.ToString().ToLowerInvariant() @(status == set.Status ? "selected" : "")"
-                                            data-status="@((int)status)">
-                                        @GetStatusDisplayName(status)
-                                    </button>
-                                }
-                            </div>
-                        </div>
-                    }
                     <div class="set-actions">
                         <form method="post" asp-page="@Model.PageName" asp-page-handler="MoveToCollection" asp-route-id="@set.Id">
                             <input type="hidden" name="currentPage" value="@Model.CurrentPage" />
@@ -205,46 +205,46 @@
                 </div>
             } else {
                 <div class="set-card @statusClass">
-                    <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card-link-area">
-                        <div class="set-image-wrapper">
-                            @if(!string.IsNullOrEmpty(set.ImageUrl)) {
-                                <picture>
-                                    <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
-                                    <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
-                                    <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
-                                </picture>
-                            } else {
-                                <div class="set-image-placeholder">
-                                    <span>No Image</span>
+                    <div class="set-image-wrapper">
+                        @if(!string.IsNullOrEmpty(set.ImageUrl)) {
+                            <picture>
+                                <source media="(max-width: 480px)" srcset="@set.ImageUrl.ToThumbnail(150, 150)">
+                                <source media="(max-width: 768px)" srcset="@set.ImageUrl.ToThumbnail(200, 200)">
+                                <img src="@set.ImageUrl.ToThumbnail(250, 250)" alt="@set.Name" class="set-image" loading="lazy" />
+                            </picture>
+                        } else {
+                            <div class="set-image-placeholder">
+                                <span>No Image</span>
+                            </div>
+                        }
+                        @if(Model.ShowStatusDropdown) {
+                            <div class="status-dropdown" data-user-set-id="@set.Id" data-current-status="@((int)set.Status)">
+                                <button type="button" class="status-badge status-@set.Status.ToString().ToLowerInvariant()">
+                                    @GetStatusDisplayName(set.Status)
+                                    <span class="dropdown-arrow">▼</span>
+                                </button>
+                                <div class="status-dropdown-menu">
+                                    @foreach(var status in Enum.GetValues<SetStatus>()) {
+                                        <button type="button"
+                                                class="status-option status-@status.ToString().ToLowerInvariant() @(status == set.Status ? "selected" : "")"
+                                                data-status="@((int)status)">
+                                            @GetStatusDisplayName(status)
+                                        </button>
+                                    }
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
+                    </div>
+                    <a asp-page="/Sets/Details" asp-route-id="@set.Id" class="set-card-link-area">
                         <div class="set-info">
                             <h3>@set.Name</h3>
                             <p class="set-number">@set.SetNumber</p>
-                            <p class="set-details">@set.Year &bull; @set.NumParts parts</p>
+                            <p class="set-details">@set.Year &bull; @set.NumParts.ToString("N0") parts</p>
                             @if(!string.IsNullOrEmpty(set.ThemeName)) {
                                 <p class="set-theme">@set.ThemeName</p>
                             }
                         </div>
                     </a>
-                    @if(Model.ShowStatusDropdown) {
-                        <div class="status-dropdown" data-user-set-id="@set.Id" data-current-status="@((int)set.Status)">
-                            <button type="button" class="status-badge status-@set.Status.ToString().ToLowerInvariant()">
-                                @GetStatusDisplayName(set.Status)
-                                <span class="dropdown-arrow">▼</span>
-                            </button>
-                            <div class="status-dropdown-menu">
-                                @foreach(var status in Enum.GetValues<SetStatus>()) {
-                                    <button type="button"
-                                            class="status-option status-@status.ToString().ToLowerInvariant() @(status == set.Status ? "selected" : "")"
-                                            data-status="@((int)status)">
-                                        @GetStatusDisplayName(status)
-                                    </button>
-                                }
-                            </div>
-                        </div>
-                    }
                 </div>
             }
         }

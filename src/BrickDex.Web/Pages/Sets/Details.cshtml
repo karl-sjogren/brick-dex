@@ -45,7 +45,7 @@
                     <dd>@Model.UserSet.Set.Year</dd>
 
                     <dt>Parts</dt>
-                    <dd>@Model.UserSet.Set.NumParts</dd>
+                    <dd>@Model.UserSet.Set.NumParts.ToString("N0")</dd>
 
                     @if(Model.UserSet.Set.Theme != null) {
                         <dt>Theme</dt>
