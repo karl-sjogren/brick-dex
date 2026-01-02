@@ -15,6 +15,8 @@ public class LegoThemeCache : ILegoThemeCache {
     private static readonly TimeSpan _cacheDuration = TimeSpan.FromHours(24);
 
     private IReadOnlyList<RebrickableTheme>? _cachedThemes;
+    private Dictionary<int, RebrickableTheme>? _themeLookup;
+    private IReadOnlyList<ThemeDisplayItem>? _cachedDisplayItems;
     private DateTimeOffset _cacheExpiry = DateTimeOffset.MinValue;
 
     public LegoThemeCache(IServiceScopeFactory scopeFactory, TimeProvider timeProvider, ILogger<LegoThemeCache> logger) {
@@ -24,16 +26,45 @@ public class LegoThemeCache : ILegoThemeCache {
     }
 
     public async Task<IReadOnlyList<RebrickableTheme>> GetThemesAsync(CancellationToken cancellationToken = default) {
+        await EnsureCacheLoadedAsync(cancellationToken);
+        return _cachedThemes!;
+    }
+
+    public async Task<IReadOnlyList<ThemeDisplayItem>> GetThemesForDisplayAsync(CancellationToken cancellationToken = default) {
+        await EnsureCacheLoadedAsync(cancellationToken);
+        return _cachedDisplayItems!;
+    }
+
+    public async Task<IReadOnlyList<int>> GetThemeAndDescendantIdsAsync(int themeId, CancellationToken cancellationToken = default) {
+        await EnsureCacheLoadedAsync(cancellationToken);
+
+        if(!_themeLookup!.TryGetValue(themeId, out var theme)) {
+            return [themeId];
+        }
+
+        var ids = new List<int>();
+        CollectDescendantIds(theme, ids);
+        return ids;
+    }
+
+    public void InvalidateCache() {
+        _cachedThemes = null;
+        _themeLookup = null;
+        _cachedDisplayItems = null;
+        _cacheExpiry = DateTimeOffset.MinValue;
+    }
+
+    private async Task EnsureCacheLoadedAsync(CancellationToken cancellationToken) {
         // Check if we have valid cached data
         if(_cachedThemes != null && _timeProvider.GetUtcNow() < _cacheExpiry) {
-            return _cachedThemes;
+            return;
         }
 
         await _lock.WaitAsync(cancellationToken);
         try {
             // Double-check after acquiring lock
             if(_cachedThemes != null && _timeProvider.GetUtcNow() < _cacheExpiry) {
-                return _cachedThemes;
+                return;
             }
 
             _logger.LogInformation("Loading themes from database");
@@ -41,23 +72,55 @@ public class LegoThemeCache : ILegoThemeCache {
             using var scope = _scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<IBrickDexContext>();
 
-            _cachedThemes = await context.RebrickableThemes
+            var themes = await context.RebrickableThemes
                 .AsNoTracking()
                 .OrderBy(t => t.Name)
                 .ToListAsync(cancellationToken);
 
+            // Build lookup dictionary and parent/child relationships
+            _themeLookup = themes.ToDictionary(t => t.Id);
+
+            // Link children to parents (since AsNoTracking doesn't populate navigation properties)
+            foreach(var theme in themes) {
+                if(theme.ParentId.HasValue && _themeLookup.TryGetValue(theme.ParentId.Value, out var parent)) {
+                    parent.Children.Add(theme);
+                }
+            }
+
+            _cachedThemes = themes;
+            _cachedDisplayItems = BuildDisplayItems(themes);
             _cacheExpiry = _timeProvider.GetUtcNow().Add(_cacheDuration);
 
             _logger.LogInformation("Cached {Count} themes", _cachedThemes.Count);
-
-            return _cachedThemes;
         } finally {
             _lock.Release();
         }
     }
 
-    public void InvalidateCache() {
-        _cachedThemes = null;
-        _cacheExpiry = DateTimeOffset.MinValue;
+    private static List<ThemeDisplayItem> BuildDisplayItems(IReadOnlyList<RebrickableTheme> themes) {
+        var displayItems = new List<ThemeDisplayItem>();
+        var rootThemes = themes.Where(t => !t.ParentId.HasValue).OrderBy(t => t.Name);
+
+        foreach(var theme in rootThemes) {
+            AddThemeAndChildren(theme, 0, displayItems);
+        }
+
+        return displayItems;
+    }
+
+    private static void AddThemeAndChildren(RebrickableTheme theme, int depth, List<ThemeDisplayItem> items) {
+        items.Add(new ThemeDisplayItem(theme.Id, theme.Name, depth));
+
+        foreach(var child in theme.Children.OrderBy(c => c.Name)) {
+            AddThemeAndChildren(child, depth + 1, items);
+        }
+    }
+
+    private static void CollectDescendantIds(RebrickableTheme theme, List<int> ids) {
+        ids.Add(theme.Id);
+
+        foreach(var child in theme.Children) {
+            CollectDescendantIds(child, ids);
+        }
     }
 }

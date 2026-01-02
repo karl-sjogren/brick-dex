@@ -39,16 +39,7 @@ public static class QueryBuilder {
         AddRangeFilter(query, DocumentMapper.FieldNumParts, filters.MinParts, filters.MaxParts);
 
         // Theme filter
-        if(filters.ThemeId.HasValue) {
-            query.Add(
-                NumericRangeQuery.NewInt32Range(
-                    DocumentMapper.FieldThemeId,
-                    filters.ThemeId.Value,
-                    filters.ThemeId.Value,
-                    minInclusive: true,
-                    maxInclusive: true),
-                Occur.MUST);
-        }
+        AddThemeFilter(query, filters.ThemeIds, filters.ThemeId);
 
         return query;
     }
@@ -185,5 +176,47 @@ public static class QueryBuilder {
             maxInclusive: true);
 
         query.Add(rangeQuery, Occur.MUST);
+    }
+
+    private static void AddThemeFilter(BooleanQuery query, IReadOnlyList<int>? themeIds, int? singleThemeId) {
+        // Use expanded theme IDs if available, otherwise fall back to single theme ID
+        if(themeIds is { Count: > 0 }) {
+            if(themeIds.Count == 1) {
+                // Single theme - use exact match
+                query.Add(
+                    NumericRangeQuery.NewInt32Range(
+                        DocumentMapper.FieldThemeId,
+                        themeIds[0],
+                        themeIds[0],
+                        minInclusive: true,
+                        maxInclusive: true),
+                    Occur.MUST);
+            } else {
+                // Multiple themes - OR them together
+                var themeQuery = new BooleanQuery();
+                foreach(var themeId in themeIds) {
+                    themeQuery.Add(
+                        NumericRangeQuery.NewInt32Range(
+                            DocumentMapper.FieldThemeId,
+                            themeId,
+                            themeId,
+                            minInclusive: true,
+                            maxInclusive: true),
+                        Occur.SHOULD);
+                }
+
+                query.Add(themeQuery, Occur.MUST);
+            }
+        } else if(singleThemeId.HasValue) {
+            // Fall back to single theme ID (legacy behavior)
+            query.Add(
+                NumericRangeQuery.NewInt32Range(
+                    DocumentMapper.FieldThemeId,
+                    singleThemeId.Value,
+                    singleThemeId.Value,
+                    minInclusive: true,
+                    maxInclusive: true),
+                Occur.MUST);
+        }
     }
 }

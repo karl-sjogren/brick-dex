@@ -333,7 +333,7 @@ h3 {
 
 // Status colors
 $status-ordered: #17a2b8;    // Info blue
-$status-instorage: #6c757d;  // Gray
+$status-instorage: #8b6914;  // Brown/tan
 $status-building: #ffc107;   // Warning yellow
 $status-built: $success-color;
 $status-sold: #6f42c1;       // Purple
@@ -967,7 +967,7 @@ a.set-card-link {
     }
 
     &.status-instorage {
-      background-color: rgb(108, 117, 125, 0.05);
+      background-color: rgb(139, 105, 20, 0.05);
     }
 
     &.status-building {
@@ -1643,6 +1643,17 @@ a.set-card-link {
   form {
     display: contents;
   }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
 }
 
 .btn-google {
@@ -1664,6 +1675,56 @@ a.set-card-link {
 
   &:hover {
     background-color: color.adjust(#24292e, $lightness: 10%);
+  }
+}
+
+.btn-facebook {
+  background-color: #1877f2;
+  color: $white;
+  width: 100%;
+
+  &:hover {
+    background-color: color.adjust(#1877f2, $lightness: -10%);
+  }
+}
+
+.btn-microsoft {
+  background-color: #2f2f2f;
+  color: $white;
+  width: 100%;
+
+  &:hover {
+    background-color: color.adjust(#2f2f2f, $lightness: 10%);
+  }
+}
+
+.btn-twitch {
+  background-color: #9146ff;
+  color: $white;
+  width: 100%;
+
+  &:hover {
+    background-color: color.adjust(#9146ff, $lightness: -10%);
+  }
+}
+
+.btn-discord {
+  background-color: #5865f2;
+  color: $white;
+  width: 100%;
+
+  &:hover {
+    background-color: color.adjust(#5865f2, $lightness: -10%);
+  }
+}
+
+.btn-apple {
+  background-color: #000;
+  color: $white;
+  width: 100%;
+
+  &:hover {
+    background-color: #333;
   }
 }
 

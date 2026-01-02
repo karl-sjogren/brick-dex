@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RebrickableSet = BrickDex.Core.Models.Rebrickable.RebrickableSet;
-using RebrickableTheme = BrickDex.Core.Models.Rebrickable.RebrickableTheme;
 
 namespace BrickDex.Web.Pages.Sets;
 
@@ -47,7 +46,7 @@ public class SearchModel : PageModel {
     public string? Ordering { get; set; }
 
     public IReadOnlyList<RebrickableSet> SearchResults { get; set; } = [];
-    public IReadOnlyList<RebrickableTheme> Themes { get; set; } = [];
+    public IReadOnlyList<ThemeDisplayItem> Themes { get; set; } = [];
     public int TotalCount { get; set; }
     public int TotalPages => TotalCount > 0 ? (int)Math.Ceiling((double)TotalCount / _pageSize) : 0;
 
@@ -69,6 +68,12 @@ public class SearchModel : PageModel {
     }
 
     private async Task ExecuteSearchAsync(CancellationToken cancellationToken) {
+        // Expand theme ID to include all descendant themes
+        IReadOnlyList<int>? themeIds = null;
+        if(ThemeId.HasValue) {
+            themeIds = await _themeCache.GetThemeAndDescendantIdsAsync(ThemeId.Value, cancellationToken);
+        }
+
         var filters = new SetSearchFilters {
             Query = Query,
             Page = CurrentPage,
@@ -78,6 +83,7 @@ public class SearchModel : PageModel {
             MinParts = MinParts,
             MaxParts = MaxParts,
             ThemeId = ThemeId,
+            ThemeIds = themeIds,
             Ordering = Ordering
         };
 
@@ -87,6 +93,6 @@ public class SearchModel : PageModel {
     }
 
     private async Task LoadThemesAsync(CancellationToken cancellationToken) {
-        Themes = await _themeCache.GetThemesAsync(cancellationToken);
+        Themes = await _themeCache.GetThemesForDisplayAsync(cancellationToken);
     }
 }

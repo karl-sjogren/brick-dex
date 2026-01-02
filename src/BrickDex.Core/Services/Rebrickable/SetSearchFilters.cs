@@ -9,6 +9,11 @@ public record SetSearchFilters {
     public int? MinParts { get; init; }
     public int? MaxParts { get; init; }
     public int? ThemeId { get; init; }
+    /// <summary>
+    /// Theme IDs to filter by (includes ThemeId and all its descendants).
+    /// If not set, ThemeId will be used as an exact match.
+    /// </summary>
+    public IReadOnlyList<int>? ThemeIds { get; init; }
     public string? Ordering { get; init; }
 
     public bool HasActiveFilters =>

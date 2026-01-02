@@ -48,7 +48,9 @@
                         <select name="themeId" id="themeFilter" class="form-control">
                             <option value="">All Themes</option>
                             @foreach(var theme in Model.Themes) {
-                                <option value="@theme.Id" selected="@(Model.ThemeId == theme.Id)">@theme.Name</option>
+                                var indent = new string('\u00A0', theme.Depth * 4);
+                                var prefix = theme.Depth > 0 ? "└ " : "";
+                                <option value="@theme.Id" selected="@(Model.ThemeId == theme.Id)">@indent@prefix@theme.Name</option>
                             }
                         </select>
                     </div>
