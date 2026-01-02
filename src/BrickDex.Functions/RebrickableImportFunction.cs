@@ -1,4 +1,5 @@
 using BrickDex.Core.Contracts;
+using BrickDex.Functions.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -6,14 +7,17 @@ namespace BrickDex.Functions;
 
 public class RebrickableImportFunction {
     private readonly IRebrickableCatalogImportService _importService;
+    private readonly IReindexWebhookClient _reindexClient;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<RebrickableImportFunction> _logger;
 
     public RebrickableImportFunction(
         IRebrickableCatalogImportService importService,
+        IReindexWebhookClient reindexClient,
         TimeProvider timeProvider,
         ILogger<RebrickableImportFunction> logger) {
         _importService = importService;
+        _reindexClient = reindexClient;
         _timeProvider = timeProvider;
         _logger = logger;
     }
@@ -27,8 +31,18 @@ public class RebrickableImportFunction {
         try {
             await _importService.ImportAllAsync(cancellationToken);
             _logger.LogInformation("Rebrickable catalog import completed successfully");
+
+            // Trigger reindex on the Web app
+            _logger.LogInformation("Triggering search index rebuild via webhook...");
+            var reindexSuccess = await _reindexClient.TriggerReindexAsync(cancellationToken);
+
+            if(reindexSuccess) {
+                _logger.LogInformation("Search index rebuild completed successfully");
+            } else {
+                _logger.LogWarning("Search index rebuild returned failure status");
+            }
         } catch(Exception ex) {
-            _logger.LogError(ex, "Rebrickable catalog import failed");
+            _logger.LogError(ex, "Rebrickable catalog import or reindex failed");
             throw;
         }
 

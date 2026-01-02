@@ -1,4 +1,5 @@
 using BrickDex.Core.Contracts;
+using Lucene.Net.Index;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -22,9 +23,14 @@ public class IndexInitializationService : IHostedService {
         _logger.LogInformation("Checking search index status...");
 
         try {
-            var stats = await _searchIndex.GetStatsAsync(cancellationToken);
+            IndexStats? stats = null;
+            try {
+                stats = await _searchIndex.GetStatsAsync(cancellationToken);
+            } catch(IndexNotFoundException ex) {
+                _logger.LogWarning(ex, "Failed to get search index stats, assuming index is missing");
+            }
 
-            if(stats.TotalDocuments == 0) {
+            if(stats is null || stats.TotalDocuments == 0) {
                 _logger.LogInformation("Search index is empty, starting rebuild...");
                 await _searchIndex.RebuildIndexAsync(cancellationToken);
                 _logger.LogInformation("Search index rebuild complete");

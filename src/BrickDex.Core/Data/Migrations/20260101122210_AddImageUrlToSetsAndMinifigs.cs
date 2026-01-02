@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BrickDex.Web.Migrations
+namespace BrickDex.Core.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddImageUrlToSetsAndMinifigs : Migration

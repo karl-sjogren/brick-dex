@@ -2,7 +2,7 @@ using BrickDex.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BrickDex.Web.Data.Configurations;
+namespace BrickDex.Core.Data.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User> {
     public void Configure(EntityTypeBuilder<User> builder) {

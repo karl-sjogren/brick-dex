@@ -2,7 +2,7 @@ using BrickDex.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BrickDex.Web.Data.Configurations;
+namespace BrickDex.Core.Data.Configurations;
 
 public class InviteConfiguration : IEntityTypeConfiguration<Invite> {
     public void Configure(EntityTypeBuilder<Invite> builder) {

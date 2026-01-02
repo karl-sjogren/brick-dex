@@ -3,15 +3,21 @@ using Azure.Identity;
 using BrickDex.Core.Contracts;
 using BrickDex.Core.Data;
 using BrickDex.Core.Services;
-using BrickDex.Lucene.Extensions;
-using BrickDex.Web.Data;
+using BrickDex.Functions.Options;
+using BrickDex.Functions.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 var builder = FunctionsApplication.CreateBuilder(args);
+
+// Add configuration files
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
 if(builder.Environment.IsProduction()) {
     builder.Configuration.AddAzureKeyVault(
@@ -33,8 +39,15 @@ builder.Services.AddScoped<IBrickDexContext>(provider => provider.GetRequiredSer
 builder.Services.AddHttpClient<IRebrickableCatalogImportService, RebrickableCatalogImportService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
-// Add Lucene search services
-builder.Services.AddLuceneSearch(builder.Configuration);
+// Configure Web app webhook client
+builder.Services.AddOptions<WebAppOptions>()
+    .Bind(builder.Configuration.GetSection(WebAppOptions.SectionName))
+    .ValidateDataAnnotations();
+
+builder.Services.AddHttpClient<IReindexWebhookClient, ReindexWebhookClient>((provider, client) => {
+    var options = provider.GetRequiredService<IOptions<WebAppOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl);
+});
 
 builder.Services
     .AddApplicationInsightsTelemetryWorkerService()

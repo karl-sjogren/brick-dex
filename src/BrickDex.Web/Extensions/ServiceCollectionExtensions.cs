@@ -3,7 +3,6 @@ using BrickDex.Core.Data;
 using BrickDex.Core.Options;
 using BrickDex.Core.Services;
 using BrickDex.Lucene.Extensions;
-using BrickDex.Web.Data;
 using BrickDex.Web.Options;
 using BrickDex.Web.Services;
 using Microsoft.Extensions.Options;

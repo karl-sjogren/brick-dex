@@ -2,7 +2,7 @@ using BrickDex.Core.Models.Rebrickable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BrickDex.Web.Data.Configurations;
+namespace BrickDex.Core.Data.Configurations;
 
 public class RebrickableInventoryMinifigConfiguration : IEntityTypeConfiguration<RebrickableInventoryMinifig> {
     public void Configure(EntityTypeBuilder<RebrickableInventoryMinifig> builder) {

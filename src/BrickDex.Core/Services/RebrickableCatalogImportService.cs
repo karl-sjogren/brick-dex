@@ -12,21 +12,19 @@ namespace BrickDex.Core.Services;
 
 public class RebrickableCatalogImportService : IRebrickableCatalogImportService {
     private const string _baseUrl = "https://cdn.rebrickable.com/media/downloads/";
+    private const int _batchSize = 2000;
 
     private readonly IBrickDexContext _context;
     private readonly HttpClient _httpClient;
     private readonly ILogger<RebrickableCatalogImportService> _logger;
-    private readonly ISearchIndex _searchIndex;
 
     public RebrickableCatalogImportService(
         IBrickDexContext context,
         HttpClient httpClient,
-        ILogger<RebrickableCatalogImportService> logger,
-        ISearchIndex searchIndex) {
+        ILogger<RebrickableCatalogImportService> logger) {
         _context = context;
         _httpClient = httpClient;
         _logger = logger;
-        _searchIndex = searchIndex;
     }
 
     public async Task ImportAllAsync(CancellationToken cancellationToken = default) {
@@ -37,11 +35,6 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
         await ImportInventoriesAsync(cancellationToken);
         await ImportInventorySetsAsync(cancellationToken);
         await ImportInventoryMinifigsAsync(cancellationToken);
-
-        // Rebuild search index after import
-        _logger.LogInformation("Rebuilding search index after catalog import...");
-        await _searchIndex.RebuildIndexAsync(cancellationToken);
-        _logger.LogInformation("Search index rebuild complete");
     }
 
     public async Task ImportThemesAsync(CancellationToken cancellationToken = default) {
@@ -183,76 +176,88 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
     }
 
     private async Task UpsertThemesAsync(List<RebrickableTheme> themes, CancellationToken cancellationToken) {
-        var existingIds = await _context.RebrickableThemes
-            .Select(t => t.Id)
-            .ToHashSetAsync(cancellationToken);
+        foreach(var batch in themes.Chunk(_batchSize)) {
+            var batchIds = batch.Select(t => t.Id).ToList();
 
-        var toAdd = themes.Where(t => !existingIds.Contains(t.Id)).ToList();
-        var toUpdate = themes.Where(t => existingIds.Contains(t.Id)).ToList();
+            var existingThemes = await _context.RebrickableThemes
+                .Where(t => batchIds.Contains(t.Id))
+                .ToDictionaryAsync(t => t.Id, cancellationToken);
 
-        if(toAdd.Count > 0) {
-            _context.RebrickableThemes.AddRange(toAdd);
-        }
+            var toAdd = new List<RebrickableTheme>();
 
-        foreach(var theme in toUpdate) {
-            var existing = await _context.RebrickableThemes.FindAsync([theme.Id], cancellationToken);
-            if(existing != null) {
-                existing.Name = theme.Name;
-                existing.ParentId = theme.ParentId;
+            foreach(var theme in batch) {
+                if(existingThemes.TryGetValue(theme.Id, out var existing)) {
+                    existing.Name = theme.Name;
+                    existing.ParentId = theme.ParentId;
+                } else {
+                    toAdd.Add(theme);
+                }
             }
-        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+            if(toAdd.Count > 0) {
+                _context.RebrickableThemes.AddRange(toAdd);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private async Task UpsertSetsAsync(List<RebrickableSet> sets, CancellationToken cancellationToken) {
-        var existingKeys = await _context.RebrickableSets
-            .Select(s => s.SetNum)
-            .ToHashSetAsync(cancellationToken);
+        foreach(var batch in sets.Chunk(_batchSize)) {
+            var batchSetNums = batch.Select(s => s.SetNum).ToList();
 
-        var toAdd = sets.Where(s => !existingKeys.Contains(s.SetNum)).ToList();
-        var toUpdate = sets.Where(s => existingKeys.Contains(s.SetNum)).ToList();
+            var existingSets = await _context.RebrickableSets
+                .Where(s => batchSetNums.Contains(s.SetNum))
+                .ToDictionaryAsync(s => s.SetNum, cancellationToken);
 
-        if(toAdd.Count > 0) {
-            _context.RebrickableSets.AddRange(toAdd);
-        }
+            var toAdd = new List<RebrickableSet>();
 
-        foreach(var set in toUpdate) {
-            var existing = await _context.RebrickableSets.FindAsync([set.SetNum], cancellationToken);
-            if(existing != null) {
-                existing.Name = set.Name;
-                existing.Year = set.Year;
-                existing.ThemeId = set.ThemeId;
-                existing.NumParts = set.NumParts;
-                existing.ImageUrl = set.ImageUrl;
+            foreach(var set in batch) {
+                if(existingSets.TryGetValue(set.SetNum, out var existing)) {
+                    existing.Name = set.Name;
+                    existing.Year = set.Year;
+                    existing.ThemeId = set.ThemeId;
+                    existing.NumParts = set.NumParts;
+                    existing.ImageUrl = set.ImageUrl;
+                } else {
+                    toAdd.Add(set);
+                }
             }
-        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+            if(toAdd.Count > 0) {
+                _context.RebrickableSets.AddRange(toAdd);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private async Task UpsertMinifigsAsync(List<RebrickableMinifig> minifigs, CancellationToken cancellationToken) {
-        var existingKeys = await _context.RebrickableMinifigs
-            .Select(m => m.FigNum)
-            .ToHashSetAsync(cancellationToken);
+        foreach(var batch in minifigs.Chunk(_batchSize)) {
+            var batchFigNums = batch.Select(m => m.FigNum).ToList();
 
-        var toAdd = minifigs.Where(m => !existingKeys.Contains(m.FigNum)).ToList();
-        var toUpdate = minifigs.Where(m => existingKeys.Contains(m.FigNum)).ToList();
+            var existingMinifigs = await _context.RebrickableMinifigs
+                .Where(m => batchFigNums.Contains(m.FigNum))
+                .ToDictionaryAsync(m => m.FigNum, cancellationToken);
 
-        if(toAdd.Count > 0) {
-            _context.RebrickableMinifigs.AddRange(toAdd);
-        }
+            var toAdd = new List<RebrickableMinifig>();
 
-        foreach(var minifig in toUpdate) {
-            var existing = await _context.RebrickableMinifigs.FindAsync([minifig.FigNum], cancellationToken);
-            if(existing != null) {
-                existing.Name = minifig.Name;
-                existing.NumParts = minifig.NumParts;
-                existing.ImageUrl = minifig.ImageUrl;
+            foreach(var minifig in batch) {
+                if(existingMinifigs.TryGetValue(minifig.FigNum, out var existing)) {
+                    existing.Name = minifig.Name;
+                    existing.NumParts = minifig.NumParts;
+                    existing.ImageUrl = minifig.ImageUrl;
+                } else {
+                    toAdd.Add(minifig);
+                }
             }
-        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+            if(toAdd.Count > 0) {
+                _context.RebrickableMinifigs.AddRange(toAdd);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private async Task UpsertInventoriesAsync(List<RebrickableInventory> inventories, CancellationToken cancellationToken) {
@@ -269,26 +274,30 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
                 originalCount - inventories.Count);
         }
 
-        var existingIds = await _context.RebrickableInventories
-            .Select(i => i.Id)
-            .ToHashSetAsync(cancellationToken);
+        foreach(var batch in inventories.Chunk(_batchSize)) {
+            var batchIds = batch.Select(i => i.Id).ToList();
 
-        var toAdd = inventories.Where(i => !existingIds.Contains(i.Id)).ToList();
-        var toUpdate = inventories.Where(i => existingIds.Contains(i.Id)).ToList();
+            var existingInventories = await _context.RebrickableInventories
+                .Where(i => batchIds.Contains(i.Id))
+                .ToDictionaryAsync(i => i.Id, cancellationToken);
 
-        if(toAdd.Count > 0) {
-            _context.RebrickableInventories.AddRange(toAdd);
-        }
+            var toAdd = new List<RebrickableInventory>();
 
-        foreach(var inventory in toUpdate) {
-            var existing = await _context.RebrickableInventories.FindAsync([inventory.Id], cancellationToken);
-            if(existing != null) {
-                existing.Version = inventory.Version;
-                existing.SetNum = inventory.SetNum;
+            foreach(var inventory in batch) {
+                if(existingInventories.TryGetValue(inventory.Id, out var existing)) {
+                    existing.Version = inventory.Version;
+                    existing.SetNum = inventory.SetNum;
+                } else {
+                    toAdd.Add(inventory);
+                }
             }
-        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+            if(toAdd.Count > 0) {
+                _context.RebrickableInventories.AddRange(toAdd);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private async Task UpsertInventorySetsAsync(List<RebrickableInventorySet> inventorySets, CancellationToken cancellationToken) {
@@ -311,28 +320,30 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
                 originalCount - inventorySets.Count);
         }
 
-        var existingKeys = await _context.RebrickableInventorySets
-            .Select(s => new { s.InventoryId, s.SetNum })
-            .ToListAsync(cancellationToken);
+        foreach(var batch in inventorySets.Chunk(_batchSize)) {
+            var batchInventoryIds = batch.Select(s => s.InventoryId).ToHashSet();
 
-        var existingKeySet = existingKeys.ToHashSet();
+            var existingInventorySets = await _context.RebrickableInventorySets
+                .Where(s => batchInventoryIds.Contains(s.InventoryId))
+                .ToDictionaryAsync(s => (s.InventoryId, s.SetNum), cancellationToken);
 
-        var toAdd = inventorySets.Where(s => !existingKeySet.Contains(new { s.InventoryId, s.SetNum })).ToList();
-        var toUpdate = inventorySets.Where(s => existingKeySet.Contains(new { s.InventoryId, s.SetNum })).ToList();
+            var toAdd = new List<RebrickableInventorySet>();
 
-        if(toAdd.Count > 0) {
-            _context.RebrickableInventorySets.AddRange(toAdd);
-        }
-
-        foreach(var inventorySet in toUpdate) {
-            var existing = await _context.RebrickableInventorySets
-                .FindAsync([inventorySet.InventoryId, inventorySet.SetNum], cancellationToken);
-            if(existing != null) {
-                existing.Quantity = inventorySet.Quantity;
+            foreach(var inventorySet in batch) {
+                var key = (inventorySet.InventoryId, inventorySet.SetNum);
+                if(existingInventorySets.TryGetValue(key, out var existing)) {
+                    existing.Quantity = inventorySet.Quantity;
+                } else {
+                    toAdd.Add(inventorySet);
+                }
             }
-        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+            if(toAdd.Count > 0) {
+                _context.RebrickableInventorySets.AddRange(toAdd);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private async Task UpsertInventoryMinifigsAsync(List<RebrickableInventoryMinifig> inventoryMinifigs, CancellationToken cancellationToken) {
@@ -355,27 +366,29 @@ public class RebrickableCatalogImportService : IRebrickableCatalogImportService 
                 originalCount - inventoryMinifigs.Count);
         }
 
-        var existingKeys = await _context.RebrickableInventoryMinifigs
-            .Select(m => new { m.InventoryId, m.FigNum })
-            .ToListAsync(cancellationToken);
+        foreach(var batch in inventoryMinifigs.Chunk(_batchSize)) {
+            var batchInventoryIds = batch.Select(m => m.InventoryId).ToHashSet();
 
-        var existingKeySet = existingKeys.ToHashSet();
+            var existingInventoryMinifigs = await _context.RebrickableInventoryMinifigs
+                .Where(m => batchInventoryIds.Contains(m.InventoryId))
+                .ToDictionaryAsync(m => (m.InventoryId, m.FigNum), cancellationToken);
 
-        var toAdd = inventoryMinifigs.Where(m => !existingKeySet.Contains(new { m.InventoryId, m.FigNum })).ToList();
-        var toUpdate = inventoryMinifigs.Where(m => existingKeySet.Contains(new { m.InventoryId, m.FigNum })).ToList();
+            var toAdd = new List<RebrickableInventoryMinifig>();
 
-        if(toAdd.Count > 0) {
-            _context.RebrickableInventoryMinifigs.AddRange(toAdd);
-        }
-
-        foreach(var inventoryMinifig in toUpdate) {
-            var existing = await _context.RebrickableInventoryMinifigs
-                .FindAsync([inventoryMinifig.InventoryId, inventoryMinifig.FigNum], cancellationToken);
-            if(existing != null) {
-                existing.Quantity = inventoryMinifig.Quantity;
+            foreach(var inventoryMinifig in batch) {
+                var key = (inventoryMinifig.InventoryId, inventoryMinifig.FigNum);
+                if(existingInventoryMinifigs.TryGetValue(key, out var existing)) {
+                    existing.Quantity = inventoryMinifig.Quantity;
+                } else {
+                    toAdd.Add(inventoryMinifig);
+                }
             }
-        }
 
-        await _context.SaveChangesAsync(cancellationToken);
+            if(toAdd.Count > 0) {
+                _context.RebrickableInventoryMinifigs.AddRange(toAdd);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }

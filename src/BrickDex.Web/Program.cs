@@ -1,11 +1,14 @@
+using System.Diagnostics;
 using System.Security.Claims;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using BrickDex.Core.Contracts;
 using BrickDex.Core.Models;
 using BrickDex.ServiceDefaults;
-using BrickDex.Web.Data;
+using BrickDex.Core.Data;
 using BrickDex.Web.Extensions;
+using BrickDex.Web.Options;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Shorthand.Vite;
 
@@ -45,6 +48,11 @@ try {
     builder.Services.AddRebrickableClient(builder.Configuration);
     builder.Services.AddBrickDexServices(builder.Configuration);
 
+    // Add webhook configuration
+    builder.Services.AddOptions<WebhookOptions>()
+        .Bind(builder.Configuration.GetSection(WebhookOptions.SectionName))
+        .ValidateDataAnnotations();
+
     // Add Vite integration
     builder.Services.AddVite(options => {
         options.ManifestFileName = ".vite/manifest.json";
@@ -68,9 +76,11 @@ try {
 
         devGroup.MapPost("/import-rebrickable-catalog", async (
             IRebrickableCatalogImportService importService,
+            ISearchIndex searchIndex,
             CancellationToken cancellationToken) => {
                 await importService.ImportAllAsync(cancellationToken);
-                return Results.Ok(new { message = "Rebrickable catalog import completed successfully" });
+                await searchIndex.RebuildIndexAsync(cancellationToken);
+                return Results.Ok(new { message = "Rebrickable catalog import and reindex completed successfully" });
             });
 
         devGroup.MapPost("/import-rebrickable-catalog/{entity}", async (
@@ -215,6 +225,51 @@ try {
             }
         });
 
+    // Webhook endpoints (authenticated via API key)
+    var webhookGroup = app.MapGroup("/api/webhooks").WithTags("Webhooks");
+
+    webhookGroup.MapPost("/reindex", async (
+        HttpContext httpContext,
+        ISearchIndex searchIndex,
+        IOptions<WebhookOptions> webhookOptions,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken) => {
+            // Validate API key
+            if(!httpContext.Request.Headers.TryGetValue("X-Api-Key", out var apiKey) ||
+                string.IsNullOrEmpty(apiKey) ||
+                apiKey != webhookOptions.Value.ReindexApiKey) {
+                logger.LogWarning("Unauthorized reindex webhook attempt");
+                return Results.Unauthorized();
+            }
+
+            logger.LogInformation("Starting search index rebuild via webhook");
+            var stopwatch = Stopwatch.StartNew();
+
+            try {
+                await searchIndex.RebuildIndexAsync(cancellationToken);
+                stopwatch.Stop();
+
+                logger.LogInformation("Search index rebuilt successfully via webhook in {ElapsedMs}ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                return Results.Ok(new ReindexResponse(
+                    Success: true,
+                    Message: "Search index rebuilt successfully",
+                    DurationMs: stopwatch.ElapsedMilliseconds
+                ));
+            } catch(Exception ex) {
+                stopwatch.Stop();
+                logger.LogError(ex, "Search index rebuild failed via webhook after {ElapsedMs}ms",
+                    stopwatch.ElapsedMilliseconds);
+
+                return Results.Problem(
+                    title: "Reindex failed",
+                    detail: ex.Message,
+                    statusCode: 500
+                );
+            }
+        });
+
     await app.RunAsync();
 } catch(Exception ex) {
     Log.Fatal(ex, "Application terminated unexpectedly");
@@ -225,3 +280,4 @@ try {
 internal record UpdateStatusRequest(SetStatus Status);
 internal record AddSetRequest(string SetNumber);
 internal record AddSetResponse(Guid Id, string SetNumber, string Name);
+internal record ReindexResponse(bool Success, string Message, long DurationMs);

@@ -1,0 +1,1 @@
+az functionapp deployment source config-zip -g rg-brickdex -n brickdex-functions --src artifacts/deploy.zip

@@ -5,7 +5,7 @@ using BrickDex.Core.Contracts;
 using BrickDex.Core.Models.Rebrickable;
 using BrickDex.Core.Services;
 using BrickDex.TestHelpers;
-using BrickDex.Web.Data;
+using BrickDex.Core.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BrickDex.Core.Tests.Services;
@@ -28,8 +28,7 @@ public class RebrickableCatalogImportServiceTests : IDisposable {
         };
 
         var logger = new NullLogger<RebrickableCatalogImportService>();
-        var searchIndex = A.Fake<ISearchIndex>();
-        _sut = new RebrickableCatalogImportService(_context, httpClient, logger, searchIndex);
+        _sut = new RebrickableCatalogImportService(_context, httpClient, logger);
     }
 
     public void Dispose() {

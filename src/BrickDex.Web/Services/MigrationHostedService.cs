@@ -1,4 +1,4 @@
-using BrickDex.Web.Data;
+using BrickDex.Core.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BrickDex.Web.Services;

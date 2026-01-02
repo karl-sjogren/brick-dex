@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace BrickDex.Web.Data.Migrations
+namespace BrickDex.Core.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddInviteSystem : Migration

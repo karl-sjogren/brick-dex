@@ -1,10 +1,9 @@
-using BrickDex.Core.Data;
 using BrickDex.Core.Models;
 using BrickDex.Core.Models.Rebrickable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace BrickDex.Web.Data;
+namespace BrickDex.Core.Data;
 
 public class BrickDexContext : DbContext, IBrickDexContext {
     public BrickDexContext(DbContextOptions<BrickDexContext> options)

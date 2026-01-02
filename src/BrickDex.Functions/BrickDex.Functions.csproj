@@ -7,8 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BrickDex.Core\BrickDex.Core.csproj" />
-    <ProjectReference Include="..\BrickDex.Lucene\BrickDex.Lucene.csproj" />
-    <ProjectReference Include="..\BrickDex.Web\BrickDex.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

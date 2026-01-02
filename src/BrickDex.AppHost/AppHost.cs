@@ -9,14 +9,16 @@ var sqlServer = builder.AddAzureSqlServer("brickdex-sqlserver")
 
 var database = sqlServer.AddDatabase("brickdex");
 
-var functions = builder.AddAzureFunctionsProject<Projects.BrickDex_Functions>("brickdex-functions")
+var web = builder.AddProject<Projects.BrickDex_Web>("brickdex-web")
     .WithReference(database)
     .WaitFor(database)
     .WithExternalHttpEndpoints();
 
-builder.AddProject<Projects.BrickDex_Web>("brickdex-web")
+builder.AddAzureFunctionsProject<Projects.BrickDex_Functions>("brickdex-functions")
     .WithReference(database)
     .WaitFor(database)
+    .WaitFor(web)
+    .WithEnvironment("WebApp__BaseUrl", web.GetEndpoint("https"))
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();
