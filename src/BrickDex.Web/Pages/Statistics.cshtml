@@ -1,0 +1,107 @@
+@page
+@model StatisticsModel
+@{
+    ViewData["Title"] = "Statistics";
+
+    var setsTotal = Model.SetsBuilt + Model.SetsBuilding + Model.SetsInStorage;
+    var setsBuiltPercent = setsTotal > 0 ? (double)Model.SetsBuilt / setsTotal * 100 : 0;
+    var setsBuildingPercent = setsTotal > 0 ? (double)Model.SetsBuilding / setsTotal * 100 : 0;
+    var setsInStoragePercent = setsTotal > 0 ? (double)Model.SetsInStorage / setsTotal * 100 : 0;
+    var setsBuiltEnd = setsBuiltPercent;
+    var setsBuildingEnd = setsBuiltEnd + setsBuildingPercent;
+
+    var piecesTotal = Model.PiecesBuilt + Model.PiecesBuilding + Model.PiecesInStorage;
+    var piecesBuiltPercent = piecesTotal > 0 ? (double)Model.PiecesBuilt / piecesTotal * 100 : 0;
+    var piecesBuildingPercent = piecesTotal > 0 ? (double)Model.PiecesBuilding / piecesTotal * 100 : 0;
+    var piecesInStoragePercent = piecesTotal > 0 ? (double)Model.PiecesInStorage / piecesTotal * 100 : 0;
+    var piecesBuiltEnd = piecesBuiltPercent;
+    var piecesBuildingEnd = piecesBuiltEnd + piecesBuildingPercent;
+}
+
+<div class="page-header">
+    <h1>Collection Statistics</h1>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">@Model.TotalSets.ToString("N0")</div>
+        <div class="stat-label">Sets in Collection</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">@Model.TotalParts.ToString("N0")</div>
+        <div class="stat-label">Total Parts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">@Model.TotalMinifigs.ToString("N0")</div>
+        <div class="stat-label">Total Minifigs</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">@Model.WishlistCount.ToString("N0")</div>
+        <div class="stat-label">On Wishlist</div>
+    </div>
+</div>
+
+<div class="charts-section">
+    <h2>Build Progress</h2>
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Sets</h3>
+            @if(setsTotal > 0) {
+                <div class="pie-chart-container">
+                    <div class="pie-chart" style="background: conic-gradient(var(--color-built) 0% @(setsBuiltEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%, var(--color-building) @(setsBuiltEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))% @(setsBuildingEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%, var(--color-in-storage) @(setsBuildingEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))% 100%);">
+                        <div class="pie-chart-center">
+                            <span class="pie-chart-percentage">@setsBuiltPercent.ToString("F0")%</span>
+                            <span class="pie-chart-label">Built</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color legend-built"></span>
+                        <span class="legend-label">Built: @Model.SetsBuilt.ToString("N0") (@setsBuiltPercent.ToString("F1")%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color legend-building"></span>
+                        <span class="legend-label">Building: @Model.SetsBuilding.ToString("N0") (@setsBuildingPercent.ToString("F1")%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color legend-in-storage"></span>
+                        <span class="legend-label">In Storage: @Model.SetsInStorage.ToString("N0") (@setsInStoragePercent.ToString("F1")%)</span>
+                    </div>
+                </div>
+            } else {
+                <p class="no-data">No sets with In Storage or Building status</p>
+            }
+        </div>
+
+        <div class="chart-card">
+            <h3>Pieces</h3>
+            @if(piecesTotal > 0) {
+                <div class="pie-chart-container">
+                    <div class="pie-chart" style="background: conic-gradient(var(--color-built) 0% @(piecesBuiltEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%, var(--color-building) @(piecesBuiltEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))% @(piecesBuildingEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%, var(--color-in-storage) @(piecesBuildingEnd.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))% 100%);">
+                        <div class="pie-chart-center">
+                            <span class="pie-chart-percentage">@piecesBuiltPercent.ToString("F0")%</span>
+                            <span class="pie-chart-label">Built</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color legend-built"></span>
+                        <span class="legend-label">Built: @Model.PiecesBuilt.ToString("N0") (@piecesBuiltPercent.ToString("F1")%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color legend-building"></span>
+                        <span class="legend-label">Building: @Model.PiecesBuilding.ToString("N0") (@piecesBuildingPercent.ToString("F1")%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color legend-in-storage"></span>
+                        <span class="legend-label">In Storage: @Model.PiecesInStorage.ToString("N0") (@piecesInStoragePercent.ToString("F1")%)</span>
+                    </div>
+                </div>
+            } else {
+                <p class="no-data">No pieces with In Storage or Building status</p>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+// ==========================================================================
+// Pagination
+// ==========================================================================
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 1rem 0;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: $text-color;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover:not(.disabled, .current) {
+    background-color: $background-color;
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+
+  &.current {
+    background-color: $primary-color;
+    border-color: $primary-color;
+    color: $white;
+  }
+
+  &.disabled {
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.pagination-prev,
+.pagination-next {
+  padding: 0 1rem;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  color: #666;
+}

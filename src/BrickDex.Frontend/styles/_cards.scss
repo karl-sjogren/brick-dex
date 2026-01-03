@@ -1,0 +1,177 @@
+// ==========================================================================
+// Cards - Set cards, Stat cards
+// ==========================================================================
+
+// Set card base
+.set-card {
+  position: relative;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  overflow: visible;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgb(0, 0, 0, 0.15);
+  }
+
+  &.has-open-dropdown {
+    z-index: 100;
+  }
+
+  .set-card-link-area,
+  .set-image-wrapper {
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+.set-image-wrapper {
+  position: relative;
+}
+
+.set-image {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  background-color: $background-color;
+}
+
+.set-image-placeholder,
+.set-thumbnail-placeholder {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $border-color;
+  color: #888;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.set-thumbnail-placeholder {
+  width: 60px;
+  height: 60px;
+  font-size: 0.625rem;
+}
+
+.set-info {
+  padding: 1rem;
+
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+}
+
+.set-number {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.set-details {
+  color: #666;
+  font-size: 0.875rem;
+
+  // Details page specific styles
+  .set-header {
+    margin-bottom: 2rem;
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: $primary-color;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.set-theme {
+  color: $primary-color;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.set-actions {
+  padding: 0 1rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+// Clickable card (full card is a link)
+a.set-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+
+  h3 {
+    color: $text-color;
+    transition: color 0.2s;
+  }
+
+  &:hover h3 {
+    color: $primary-color;
+  }
+}
+
+// Clickable area within card (for cards with actions)
+.set-card-link-area {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+
+  h3 {
+    color: $text-color;
+    transition: color 0.2s;
+  }
+
+  &:hover h3 {
+    color: $primary-color;
+  }
+}
+
+// Stat cards
+.stat-card {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: $primary-color;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.stats-more {
+  text-align: right;
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+
+  a {
+    color: $primary-color;
+    text-decoration: none;
+    font-size: 0.875rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

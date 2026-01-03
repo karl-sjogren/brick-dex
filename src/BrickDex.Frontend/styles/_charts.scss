@@ -1,0 +1,117 @@
+// ==========================================================================
+// Charts - Pie charts and legends
+// ==========================================================================
+
+.charts-section {
+  margin-top: 2rem;
+
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-card {
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 1.125rem;
+    color: $text-color;
+  }
+}
+
+.pie-chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.pie-chart {
+  --color-built: #{$status-built};
+  --color-building: #{$status-building};
+  --color-in-storage: #{$status-instorage};
+
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pie-chart-center {
+  width: 100px;
+  height: 100px;
+  background: $white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pie-chart-percentage {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: $success-color;
+}
+
+.pie-chart-label {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-built {
+  background-color: $status-built;
+}
+
+.legend-building {
+  background-color: $status-building;
+}
+
+.legend-in-storage {
+  background-color: $status-instorage;
+}
+
+.legend-label {
+  color: $text-color;
+}
+
+.no-data {
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+}

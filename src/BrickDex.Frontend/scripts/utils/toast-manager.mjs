@@ -28,9 +28,9 @@ class ToastManager {
   /**
    * Shows a toast notification.
    * @param {string} message - The message to display.
-   * @param {'success' | 'error'} [type='success'] - The type of toast.
-   * @param {{ url: string, text: string } | null} [link=null] - Optional action link.
-   * @param {string | null} [badge=null] - Optional badge text displayed before the message.
+   * @param {'success' | 'error'} type - The type of toast.
+   * @param {{ url: string, text: string } | null} link - Optional action link.
+   * @param {string | null} badge - Optional badge text displayed before the message.
    */
   show(message, type = 'success', link = null, badge = null) {
     const container = this.#getOrCreateContainer();
@@ -104,8 +104,8 @@ class ToastManager {
   /**
    * Shows a success toast notification.
    * @param {string} message - The message to display.
-   * @param {{ url: string, text: string } | null} [link=null] - Optional action link.
-   * @param {string | null} [badge=null] - Optional badge text displayed before the message.
+   * @param {{ url: string, text: string } | null} link - Optional action link.
+   * @param {string | null} badge - Optional badge text displayed before the message.
    */
   success(message, link = null, badge = null) {
     this.show(message, 'success', link, badge);
@@ -114,8 +114,8 @@ class ToastManager {
   /**
    * Shows an error toast notification.
    * @param {string} message - The message to display.
-   * @param {{ url: string, text: string } | null} [link=null] - Optional action link.
-   * @param {string | null} [badge=null] - Optional badge text displayed before the message.
+   * @param {{ url: string, text: string } | null} link - Optional action link.
+   * @param {string | null} badge - Optional badge text displayed before the message.
    */
   error(message, link = null, badge = null) {
     this.show(message, 'error', link, badge);

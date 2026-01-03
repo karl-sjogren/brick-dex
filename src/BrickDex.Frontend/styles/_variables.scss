@@ -1,0 +1,20 @@
+// ==========================================================================
+// Variables
+// ==========================================================================
+
+// Colors
+$primary-color: #e3000b; // LEGO red
+$secondary-color: #ffcf00; // LEGO yellow
+$text-color: #333;
+$background-color: #f5f5f5;
+$white: #fff;
+$border-color: #ddd;
+$success-color: #28a745;
+$danger-color: #dc3545;
+
+// Status colors
+$status-ordered: #17a2b8;    // Info blue
+$status-instorage: #8b6914;  // Brown/tan
+$status-building: #ffc107;   // Warning yellow
+$status-built: $success-color;
+$status-sold: #6f42c1;       // Purple

@@ -1,0 +1,35 @@
+// ==========================================================================
+// Base Styles - Reset and Typography
+// ==========================================================================
+
+// Reset
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: $text-color;
+  background-color: $background-color;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Typography
+h1,
+h2,
+h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.text-yellow {
+  color: $secondary-color;
+}

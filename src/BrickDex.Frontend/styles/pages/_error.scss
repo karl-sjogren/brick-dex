@@ -1,0 +1,43 @@
+// ==========================================================================
+// Error Pages - Error and access denied
+// ==========================================================================
+
+// Error page
+.error-page {
+  text-align: center;
+  padding: 3rem;
+}
+
+.request-id {
+  margin-top: 1rem;
+  color: #666;
+}
+
+// Access denied page
+.access-denied-page {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3rem 1rem;
+
+  h1 {
+    color: $danger-color;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 1rem;
+
+    &:last-of-type {
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.access-denied-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}

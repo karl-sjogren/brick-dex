@@ -13,6 +13,7 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/BrickDex.Core.Tests/BrickDex.Core.Tests.csproj" />
+    <Project Path="test/BrickDex.Lucene.Tests/BrickDex.Lucene.Tests.csproj" />
     <Project Path="test/BrickDex.TestHelpers/BrickDex.TestHelpers.csproj" />
   </Folder>
 </Solution>

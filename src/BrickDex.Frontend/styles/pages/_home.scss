@@ -1,0 +1,79 @@
+// ==========================================================================
+// Home Page - Hero, quick actions, recent sets
+// ==========================================================================
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin-bottom: 0;
+  }
+}
+
+.hero {
+  text-align: center;
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2.5rem;
+    color: $primary-color;
+  }
+
+  .lead {
+    font-size: 1.25rem;
+    color: #666;
+  }
+}
+
+.quick-actions {
+  margin-bottom: 2rem;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.recent-sets {
+  h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+// Empty state
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Welcome CTA
+.welcome-cta {
+  text-align: center;
+  padding: 2rem;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+  }
+}
