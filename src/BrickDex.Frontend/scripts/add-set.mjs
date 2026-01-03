@@ -30,11 +30,12 @@ async function addSet(setNumber, isWishlist) {
     return data;
   } catch(error) {
     toastManager.error(`Failed to add set to ${targetName}. Please try again.`, null, setNumber);
+    console.error(`Error adding set ${setNumber} to ${targetName}:`, error);
     return null;
   }
 }
 
-document.addEventListener('click', async (e) => {
+document.addEventListener('click', async(e) => {
   const addCollectionBtn = e.target.closest('.btn-add-collection');
   if(addCollectionBtn) {
     e.preventDefault();
