@@ -143,6 +143,12 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v6
 
+    - name: Download frontend tests results
+      uses: actions/download-artifact@v7
+      with:
+        name: frontend-test-results
+        path: ./
+
     - name: Download .NET tests results
       uses: actions/download-artifact@v6
       with:
@@ -179,10 +185,10 @@ jobs:
     - name: Generate coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
-        reports: '../**/coverage.cobertura.xml;../**/cobertura-coverage.xml'
+        reports: './**/coverage.cobertura.xml;./**/cobertura-coverage.xml'
         targetdir: 'coverage-report'
         historydir: 'coverage-history'
-        reporttypes: 'Html;MarkdownSummary;MarkdownDeltaSummary;Cobertura'
+        reporttypes: 'MarkdownSummary;Cobertura'
         assemblyfilters: '-xunit*'
         verbosity: 'Info'
 
@@ -234,11 +240,11 @@ jobs:
       run: dotnet restore --verbosity minimal
 
     - name: Publish application
-      run: dotnet publish --output ./artifacts --no-restore -r linux-x64
+      run: dotnet publish --output ./artifacts -r linux-x64
       working-directory: ./src/BrickDex.Web/
 
     - name: Publish functions
-      run: dotnet publish --output ./artifacts --no-restore -r linux-x64
+      run: dotnet publish --output ./artifacts -r linux-x64
       working-directory: ./src/BrickDex.Functions/
 
     - name: Upload build artifacts
