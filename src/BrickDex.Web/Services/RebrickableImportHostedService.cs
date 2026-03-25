@@ -18,18 +18,19 @@ public class RebrickableImportHostedService : BackgroundService {
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
         while(!stoppingToken.IsCancellationRequested) {
-            var nextRun = GetTimeUntilNextRun();
+            var failedLastRun = false;
+
+            var nextRun = failedLastRun ? TimeSpan.FromHours(1) : GetTimeUntilNextRun();
+
+            await Task.Delay(nextRun, stoppingToken);
 
             try {
                 await ImportCatalogAsync(stoppingToken);
             } catch(Exception ex) {
                 _logger.LogError(ex, "Error occurred during Rebrickable import. Retrying in 1 hour.");
 
-                nextRun = TimeSpan.FromHours(1);
+                failedLastRun = true;
             }
-
-            // Wait for the calculated time until the next run
-            await Task.Delay(nextRun, stoppingToken);
         }
     }
 

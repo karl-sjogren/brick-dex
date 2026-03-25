@@ -23,7 +23,7 @@ export default defineConfig({
   ],
   build: {
     cssCodeSplit: false,
-    outDir: resolve(__dirname, '../BrickDex.Web/wwwroot//'),
+    outDir: resolve(__dirname, './artifacts/'),
     emptyOutDir: false,
     assetsDir: 'assets',
     reportCompressedSize: true,

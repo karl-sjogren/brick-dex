@@ -7,11 +7,9 @@
     <GlobalPackageReference Include="TestableIO.System.IO.Abstractions.Analyzers" Version="2022.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Azure" Version="13.2.0" />
-    <PackageVersion Include="Aspire.Hosting.Azure.AppService" Version="13.2.0" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Functions" Version="13.2.0" />
-    <PackageVersion Include="Aspire.Hosting.Azure.KeyVault" Version="13.2.0" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Hosting.Docker" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.2.0" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.2.0" />
     <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.2.0" />
     <PackageVersion Include="AspNet.Security.OAuth.Apple" Version="10.0.0" />
     <PackageVersion Include="AspNet.Security.OAuth.Discord" Version="10.0.0" />

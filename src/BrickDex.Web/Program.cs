@@ -1,5 +1,3 @@
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
-using Azure.Identity;
 using BrickDex.Core.Data;
 using BrickDex.ServiceDefaults;
 using BrickDex.Web.Endpoints;
@@ -17,24 +15,16 @@ try {
 
     var builder = WebApplication.CreateBuilder(args);
 
-    if(builder.Environment.IsProduction()) {
-        builder.Configuration.AddAzureKeyVault(
-            new Uri("https://brickdex-keyvault.vault.azure.net/"),
-            new DefaultAzureCredential(),
-            new AzureKeyVaultConfigurationOptions {
-                ReloadInterval = TimeSpan.FromMinutes(5)
-            }
-        );
-    }
-
     builder.AddServiceDefaults();
 
     builder.Services.AddSerilog();
 
     // Add database context (SQL Server via Aspire)
-    builder.AddSqlServerDbContext<BrickDexContext>("brickdex");
+    builder.AddSqlServerDbContext<BrickDexContext>("brickdexdb");
 
-    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    if(builder.Environment.IsDevelopment()) {
+        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    }
 
     // Add authentication
     builder.Services.AddBrickDexAuthentication(builder.Configuration);
