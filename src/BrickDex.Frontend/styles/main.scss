@@ -6,29 +6,29 @@
 @use 'sass:color';
 
 // Core styles
-@import 'variables';
-@import 'base';
-@import 'layout';
+@use 'variables';
+@use 'base';
+@use 'layout';
 
 // Components
-@import 'buttons';
-@import 'forms';
-@import 'status';
-@import 'cards';
-@import 'grids';
-@import 'tables';
-@import 'charts';
-@import 'toast';
-@import 'pagination';
-@import 'search';
-@import 'alerts';
+@use 'buttons';
+@use 'forms';
+@use 'status';
+@use 'cards';
+@use 'grids';
+@use 'tables';
+@use 'charts';
+@use 'toast';
+@use 'pagination';
+@use 'search';
+@use 'alerts';
 
 // Page-specific styles
-@import 'pages/home';
-@import 'pages/details';
-@import 'pages/login';
-@import 'pages/invites';
-@import 'pages/error';
+@use 'pages/home';
+@use 'pages/details';
+@use 'pages/login';
+@use 'pages/invites';
+@use 'pages/error';
 
 // Responsive overrides (must be last)
-@import 'responsive';
+@use 'responsive';

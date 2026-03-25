@@ -1,3 +1,5 @@
+@use "variables";
+
 // ==========================================================================
 // Status - Badges and Dropdown (shared between cards and tables)
 // ==========================================================================
@@ -10,28 +12,28 @@
   padding: 0.125rem 0.375rem;
   border-radius: 3px;
   text-transform: uppercase;
-  color: $white;
-  background-color: $status-instorage;
+  color: variables.$white;
+  background-color: variables.$status-instorage;
 
   &.status-ordered {
-    background-color: $status-ordered;
+    background-color: variables.$status-ordered;
   }
 
   &.status-instorage {
-    background-color: $status-instorage;
+    background-color: variables.$status-instorage;
   }
 
   &.status-building {
-    background-color: $status-building;
-    color: $text-color;
+    background-color: variables.$status-building;
+    color: variables.$text-color;
   }
 
   &.status-built {
-    background-color: $status-built;
+    background-color: variables.$status-built;
   }
 
   &.status-sold {
-    background-color: $status-sold;
+    background-color: variables.$status-sold;
   }
 
   &.status-none {
@@ -55,34 +57,34 @@
     gap: 4px;
     cursor: pointer;
     border: none;
-    color: $white;
+    color: variables.$white;
     font-size: 0.7rem;
     font-weight: 600;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     text-transform: uppercase;
-    background-color: $status-instorage;
+    background-color: variables.$status-instorage;
     box-shadow: 0 1px 3px rgb(0, 0, 0, 0.3);
 
     &.status-ordered {
-      background-color: $status-ordered;
+      background-color: variables.$status-ordered;
     }
 
     &.status-instorage {
-      background-color: $status-instorage;
+      background-color: variables.$status-instorage;
     }
 
     &.status-building {
-      background-color: $status-building;
-      color: $text-color;
+      background-color: variables.$status-building;
+      color: variables.$text-color;
     }
 
     &.status-built {
-      background-color: $status-built;
+      background-color: variables.$status-built;
     }
 
     &.status-sold {
-      background-color: $status-sold;
+      background-color: variables.$status-sold;
     }
 
     &.status-none {
@@ -106,8 +108,8 @@
     top: calc(100% + 4px);
     right: 0;
     min-width: 120px;
-    background: $white;
-    border: 1px solid $border-color;
+    background: variables.$white;
+    border: 1px solid variables.$border-color;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgb(0, 0, 0, 0.15);
     overflow: hidden;
@@ -122,11 +124,11 @@
       background: none;
       cursor: pointer;
       font-size: 0.75rem;
-      color: $text-color;
+      color: variables.$text-color;
       white-space: nowrap;
 
       &:hover {
-        background: $background-color;
+        background: variables.$background-color;
       }
 
       &.selected {
@@ -134,23 +136,23 @@
       }
 
       &.status-ordered {
-        border-left: 3px solid $status-ordered;
+        border-left: 3px solid variables.$status-ordered;
       }
 
       &.status-instorage {
-        border-left: 3px solid $status-instorage;
+        border-left: 3px solid variables.$status-instorage;
       }
 
       &.status-building {
-        border-left: 3px solid $status-building;
+        border-left: 3px solid variables.$status-building;
       }
 
       &.status-built {
-        border-left: 3px solid $status-built;
+        border-left: 3px solid variables.$status-built;
       }
 
       &.status-sold {
-        border-left: 3px solid $status-sold;
+        border-left: 3px solid variables.$status-sold;
       }
 
       &.status-none {
@@ -175,22 +177,22 @@
 // Card status border colors
 .set-card.has-status {
   &.status-ordered {
-    border-color: $status-ordered;
+    border-color: variables.$status-ordered;
   }
 
   &.status-instorage {
-    border-color: $status-instorage;
+    border-color: variables.$status-instorage;
   }
 
   &.status-building {
-    border-color: $status-building;
+    border-color: variables.$status-building;
   }
 
   &.status-built {
-    border-color: $status-built;
+    border-color: variables.$status-built;
   }
 
   &.status-sold {
-    border-color: $status-sold;
+    border-color: variables.$status-sold;
   }
 }

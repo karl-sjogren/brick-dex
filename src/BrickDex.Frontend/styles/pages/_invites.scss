@@ -1,3 +1,5 @@
+@use "../variables";
+
 // ==========================================================================
 // Invites Page - Invite management table
 // ==========================================================================
@@ -40,27 +42,27 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   font-family: monospace;
-  border: 1px solid $border-color;
+  border: 1px solid variables.$border-color;
   border-radius: 4px;
-  background-color: $white;
+  background-color: variables.$white;
 }
 
 .invites-table {
   width: 100%;
-  background-color: $white;
+  background-color: variables.$white;
   border-collapse: collapse;
-  border: 1px solid $border-color;
+  border: 1px solid variables.$border-color;
   border-radius: 8px;
 
   th,
   td {
     padding: 0.75rem 1rem;
     text-align: left;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid variables.$border-color;
   }
 
   th {
-    background-color: $background-color;
+    background-color: variables.$background-color;
     font-weight: 600;
     font-size: 0.875rem;
     color: #666;
@@ -79,7 +81,7 @@
   code {
     font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
     font-size: 0.875rem;
-    background-color: $background-color;
+    background-color: variables.$background-color;
     padding: 0.125rem 0.375rem;
     border-radius: 3px;
   }

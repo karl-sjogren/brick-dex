@@ -1,3 +1,5 @@
+@use "variables";
+
 // ==========================================================================
 // Charts - Pie charts and legends
 // ==========================================================================
@@ -17,8 +19,8 @@
 }
 
 .chart-card {
-  background-color: $white;
-  border: 1px solid $border-color;
+  background-color: variables.$white;
+  border: 1px solid variables.$border-color;
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
@@ -26,7 +28,7 @@
   h3 {
     margin: 0 0 1rem;
     font-size: 1.125rem;
-    color: $text-color;
+    color: variables.$text-color;
   }
 }
 
@@ -37,9 +39,9 @@
 }
 
 .pie-chart {
-  --color-built: #{$status-built};
-  --color-building: #{$status-building};
-  --color-in-storage: #{$status-instorage};
+  --color-built: #{variables.$status-built};
+  --color-building: #{variables.$status-building};
+  --color-in-storage: #{variables.$status-instorage};
 
   width: 180px;
   height: 180px;
@@ -53,7 +55,7 @@
 .pie-chart-center {
   width: 100px;
   height: 100px;
-  background: $white;
+  background: variables.$white;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -64,7 +66,7 @@
 .pie-chart-percentage {
   font-size: 1.5rem;
   font-weight: bold;
-  color: $success-color;
+  color: variables.$success-color;
 }
 
 .pie-chart-label {
@@ -95,19 +97,19 @@
 }
 
 .legend-built {
-  background-color: $status-built;
+  background-color: variables.$status-built;
 }
 
 .legend-building {
-  background-color: $status-building;
+  background-color: variables.$status-building;
 }
 
 .legend-in-storage {
-  background-color: $status-instorage;
+  background-color: variables.$status-instorage;
 }
 
 .legend-label {
-  color: $text-color;
+  color: variables.$text-color;
 }
 
 .no-data {

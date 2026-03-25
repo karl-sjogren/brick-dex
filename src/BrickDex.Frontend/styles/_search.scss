@@ -1,3 +1,5 @@
+@use "variables";
+
 // ==========================================================================
 // Search - Search form, view toggle, and filters
 // ==========================================================================
@@ -17,22 +19,22 @@
   height: 2.375rem;
   padding: 0.5rem;
   color: #666;
-  background-color: $white;
-  border: 1px solid $border-color;
+  background-color: variables.$white;
+  border: 1px solid variables.$border-color;
   border-radius: 4px;
   text-decoration: none;
   transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 
   &:hover {
-    background-color: $background-color;
-    border-color: $primary-color;
-    color: $primary-color;
+    background-color: variables.$background-color;
+    border-color: variables.$primary-color;
+    color: variables.$primary-color;
   }
 
   &.active {
-    background-color: $primary-color;
-    border-color: $primary-color;
-    color: $white;
+    background-color: variables.$primary-color;
+    border-color: variables.$primary-color;
+    color: variables.$white;
   }
 
   svg {
@@ -71,9 +73,9 @@
 // Search filters
 .search-filters {
   margin-top: 1rem;
-  border: 1px solid $border-color;
+  border: 1px solid variables.$border-color;
   border-radius: 8px;
-  background-color: $white;
+  background-color: variables.$white;
 }
 
 .filters-toggle {
@@ -86,17 +88,17 @@
   user-select: none;
 
   &:hover {
-    background-color: $background-color;
+    background-color: variables.$background-color;
   }
 
   &::marker {
-    color: $primary-color;
+    color: variables.$primary-color;
   }
 }
 
 .active-filters-badge {
-  background-color: $primary-color;
-  color: $white;
+  background-color: variables.$primary-color;
+  color: variables.$white;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.125rem 0.5rem;
@@ -106,7 +108,7 @@
 
 .filters-panel {
   padding: 1rem;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid variables.$border-color;
 }
 
 .filters-grid {
@@ -151,5 +153,5 @@
   display: flex;
   gap: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid variables.$border-color;
 }

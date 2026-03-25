@@ -1,3 +1,5 @@
+@use "variables";
+
 // ==========================================================================
 // Pagination
 // ==========================================================================
@@ -27,22 +29,22 @@
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  color: $text-color;
-  background-color: $white;
-  border: 1px solid $border-color;
+  color: variables.$text-color;
+  background-color: variables.$white;
+  border: 1px solid variables.$border-color;
   border-radius: 4px;
   transition: background-color 0.2s, border-color 0.2s;
 
   &:hover:not(.disabled, .current) {
-    background-color: $background-color;
-    border-color: $primary-color;
-    color: $primary-color;
+    background-color: variables.$background-color;
+    border-color: variables.$primary-color;
+    color: variables.$primary-color;
   }
 
   &.current {
-    background-color: $primary-color;
-    border-color: $primary-color;
-    color: $white;
+    background-color: variables.$primary-color;
+    border-color: variables.$primary-color;
+    color: variables.$white;
   }
 
   &.disabled {

@@ -1,3 +1,6 @@
+@use "variables";
+@use 'sass:color';
+
 // ==========================================================================
 // Buttons
 // ==========================================================================
@@ -24,17 +27,17 @@
 }
 
 .btn-primary {
-  background-color: $primary-color;
-  color: $white;
+  background-color: variables.$primary-color;
+  color: variables.$white;
 
   &:hover {
-    background-color: color.adjust($primary-color, $lightness: -10%);
+    background-color: color.adjust(variables.$primary-color, $lightness: -10%);
   }
 }
 
 .btn-secondary {
   background-color: #6c757d;
-  color: $white;
+  color: variables.$white;
 
   &:hover {
     background-color: color.adjust(#6c757d, $lightness: -10%);
@@ -42,20 +45,20 @@
 }
 
 .btn-success {
-  background-color: $success-color;
-  color: $white;
+  background-color: variables.$success-color;
+  color: variables.$white;
 
   &:hover {
-    background-color: color.adjust($success-color, $lightness: -10%);
+    background-color: color.adjust(variables.$success-color, $lightness: -10%);
   }
 }
 
 .btn-danger {
-  background-color: $danger-color;
-  color: $white;
+  background-color: variables.$danger-color;
+  color: variables.$white;
 
   &:hover {
-    background-color: color.adjust($danger-color, $lightness: -10%);
+    background-color: color.adjust(variables.$danger-color, $lightness: -10%);
   }
 }
 

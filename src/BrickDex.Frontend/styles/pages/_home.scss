@@ -1,3 +1,5 @@
+@use "../variables";
+
 // ==========================================================================
 // Home Page - Hero, quick actions, recent sets
 // ==========================================================================
@@ -20,7 +22,7 @@
 
   h1 {
     font-size: 2.5rem;
-    color: $primary-color;
+    color: variables.$primary-color;
   }
 
   .lead {
@@ -53,8 +55,8 @@
 .empty-state {
   text-align: center;
   padding: 3rem;
-  background-color: $white;
-  border: 1px solid $border-color;
+  background-color: variables.$white;
+  border: 1px solid variables.$border-color;
   border-radius: 8px;
 
   p {
@@ -67,8 +69,8 @@
 .welcome-cta {
   text-align: center;
   padding: 2rem;
-  background-color: $white;
-  border: 1px solid $border-color;
+  background-color: variables.$white;
+  border: 1px solid variables.$border-color;
   border-radius: 8px;
 
   p {

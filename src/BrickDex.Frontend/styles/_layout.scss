@@ -1,3 +1,5 @@
+@use "variables";
+
 // ==========================================================================
 // Layout - Container, Header, Navbar, Footer
 // ==========================================================================
@@ -11,8 +13,8 @@
 
 // Header
 .site-header {
-  background-color: $primary-color;
-  color: $white;
+  background-color: variables.$primary-color;
+  color: variables.$white;
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgb(0, 0, 0, 0.1);
 }
@@ -33,7 +35,7 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  color: $white;
+  color: variables.$white;
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
@@ -43,7 +45,7 @@
   }
 
   &:hover {
-    color: $secondary-color;
+    color: variables.$secondary-color;
   }
 }
 
@@ -56,11 +58,11 @@
 }
 
 .nav-link {
-  color: $white;
+  color: variables.$white;
   text-decoration: none;
 
   &:hover {
-    color: $secondary-color;
+    color: variables.$secondary-color;
   }
 }
 
@@ -78,7 +80,7 @@
   display: block;
   width: 24px;
   height: 2px;
-  background-color: $white;
+  background-color: variables.$white;
   position: relative;
   transition: background-color 0.2s;
 
@@ -89,7 +91,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: $white;
+    background-color: variables.$white;
     transition: transform 0.2s;
   }
 
@@ -133,8 +135,8 @@
 
 // Footer
 .site-footer {
-  background-color: $text-color;
-  color: $white;
+  background-color: variables.$text-color;
+  color: variables.$white;
   padding: 1rem 0;
   text-align: center;
 
