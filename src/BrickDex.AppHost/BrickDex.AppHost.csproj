@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BrickDex.Functions\BrickDex.Functions.csproj" />
     <ProjectReference Include="..\BrickDex.Web\BrickDex.Web.csproj" />
   </ItemGroup>
 

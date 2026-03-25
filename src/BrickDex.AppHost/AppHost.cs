@@ -14,11 +14,4 @@ var web = builder.AddProject<Projects.BrickDex_Web>("brickdex-web")
     .WaitFor(database)
     .WithExternalHttpEndpoints();
 
-builder.AddAzureFunctionsProject<Projects.BrickDex_Functions>("brickdex-functions")
-    .WithReference(database)
-    .WaitFor(database)
-    .WaitFor(web)
-    .WithEnvironment("WebApp__BaseUrl", web.GetEndpoint("https"))
-    .WithExternalHttpEndpoints();
-
 builder.Build().Run();

@@ -4,7 +4,6 @@ using BrickDex.Core.Data;
 using BrickDex.ServiceDefaults;
 using BrickDex.Web.Endpoints;
 using BrickDex.Web.Extensions;
-using BrickDex.Web.Options;
 using Serilog;
 using Shorthand.Vite;
 
@@ -43,11 +42,6 @@ try {
     // Add services
     builder.Services.AddRebrickableClient(builder.Configuration);
     builder.Services.AddBrickDexServices(builder.Configuration);
-
-    // Add webhook configuration
-    builder.Services.AddOptions<WebhookOptions>()
-        .Bind(builder.Configuration.GetSection(WebhookOptions.SectionName))
-        .ValidateDataAnnotations();
 
     // Add Vite integration
     builder.Services.AddVite(options => {
@@ -90,7 +84,6 @@ try {
 
     // API endpoints
     app.MapUserSetEndpoints();
-    app.MapWebhookEndpoints();
 
     await app.RunAsync();
 } catch(Exception ex) {

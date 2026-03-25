@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions {
         services.AddSingleton<IViewPreferenceService, ViewPreferenceService>();
         services.AddHttpClient<IRebrickableCatalogImportService, RebrickableCatalogImportService>();
         services.AddHostedService<MigrationHostedService>();
+        services.AddHostedService<RebrickableImportHostedService>();
 
         // Add Lucene search services
         services.AddLuceneSearch(configuration);
