@@ -169,7 +169,7 @@ jobs:
         assemblyfilters: '-xunit*'
         verbosity: 'Info'
     - name: Upload to Codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       # To save on uploads, only upload coverage from the main branches and PRs
       if: env.PUBLISH_CODECOV
       with:
